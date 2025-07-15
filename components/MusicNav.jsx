@@ -12,17 +12,31 @@ import {
 } from "react-bootstrap";
 
 export default function MusicNav({ nowPlaying }) {
+  const playerRef = useRef();
+
+  const initialState = {
+    src: undefined,
+    pip: false,
+    playing: false,
+    controls: false,
+    light: false,
+    volume: 1,
+    muted: false,
+    played: 0,
+    loaded: 0,
+    duration: 0,
+    playbackRate: 1.0,
+    loop: false,
+    seeking: false,
+    loadedSeconds: 0,
+    playedSeconds: 0,
+  };
+
   const [songId, setSongId] = useState(null);
   const [songCover, setSongCover] = useState("");
   const [songTitle, setSongTitle] = useState("");
   const [artist, setArtist] = useState("");
-  const [playing, setPlaying] = useState(false);
-  const [volume, setVolume] = useState(0.5);
-  const [played, setPlayed] = useState(0);
-  const [duration, setDuration] = useState(null);
-  const [state, setState] = useState(null);
-
-  const playerRef = useRef();
+  const [state, setState] = useState(initialState);
 
   useEffect(() => {
     async function playSong() {
@@ -32,13 +46,11 @@ export default function MusicNav({ nowPlaying }) {
         );
         const song = response.data.results[0];
 
-        setDuration(song.duration);
-
         setSongId(song.videoId);
         setSongCover(song.thumbnails[1].url);
         setSongTitle(song.name);
         setArtist(song.artist);
-        setPlaying(true);
+        setState((prevState) => ({ ...prevState, playing: true }));
       } catch (error) {
         console.error("Error playing song", error);
       }
@@ -49,25 +61,51 @@ export default function MusicNav({ nowPlaying }) {
     }
   }, [nowPlaying]);
 
-  const convertDuration = (duration) => {
-    const ms = duration,
-      min = String(Math.floor((ms / 1000 / 60) << 0)),
-      sec = String(Math.floor((ms / 1000) % 60)).padStart(2, "0");
+  const handleTimeUpdate = () => {
+    const player = playerRef.current;
+    // We only want to update time slider if we are not currently seeking
+    if (!player || state.seeking) return;
 
-    return min + ":" + sec;
-  };
+    console.log("onTimeUpdate", player.currentTime);
 
-  const handleVolumeChange = (e) => {
-    setVolume(parseFloat(e.target.value));
+    if (!player.duration) return;
+
+    setState((prevState) => ({
+      ...prevState,
+      playedSeconds: player.currentTime,
+      played: player.currentTime / player.duration,
+    }));
   };
 
   const handlePause = () => {
-    setPlaying(!playing);
+    console.log("onPause");
+    setState((prevState) => ({ ...prevState, playing: false }));
   };
 
-  const handleEnded = () => {
-    setPlaying(false);
+  const handlePlay = () => {
+    console.log("onPlay");
+    setState((prevState) => ({ ...prevState, playing: true }));
   };
+
+  const handleVolumeChange = (event) => {
+    const inputTarget = event.target;
+    setState((prev) => ({ ...prev, volume: inputTarget.value }));
+  };
+
+  const {
+    src,
+    playing,
+    controls,
+    light,
+    volume,
+    muted,
+    loop,
+    played,
+    loaded,
+    duration,
+    playbackRate,
+    pip,
+  } = state;
 
   return (
     <Navbar bg="black" variant="dark">
@@ -89,7 +127,7 @@ export default function MusicNav({ nowPlaying }) {
                 volume={volume}
                 width="0"
                 height="0"
-                onEnded={handleEnded}
+                onTimeUpdate={handleTimeUpdate}
               />
             </div>
           )}
@@ -118,7 +156,10 @@ export default function MusicNav({ nowPlaying }) {
           {/* Center: Play + Time Slider */}
           <Col md={4}>
             <div className="d-flex align-items-center justify-content-center gap-3">
-              <Button variant="outline-light" onClick={handlePause}>
+              <Button
+                variant="outline-light"
+                onClick={playing ? handlePause : handlePlay}
+              >
                 {playing ? (
                   <i className="bi bi-pause-fill" />
                 ) : (
@@ -155,7 +196,6 @@ export default function MusicNav({ nowPlaying }) {
               onChange={handleVolumeChange}
             />
           </Col>
-          <Button onClick={() => console.log(songId)}></Button>
         </Row>
       </Container>
     </Navbar>
