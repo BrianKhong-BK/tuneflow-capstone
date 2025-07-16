@@ -45,12 +45,13 @@ export default function MusicNav({ nowPlaying }) {
         const response = await axios.get(
           `http://localhost:3001/api/youtube-search?q=${nowPlaying}`
         );
-        const song = response.data.results[0];
+        const song = response.data.results;
+        console.log(song);
 
         setSongId(song.videoId);
         setSongCover(song.thumbnails[1].url);
         setSongTitle(song.name);
-        setArtist(song.artist);
+        setArtist(song.artist.name);
         setState((prevState) => ({ ...prevState, playing: true }));
       } catch (error) {
         console.error("Error playing song", error);

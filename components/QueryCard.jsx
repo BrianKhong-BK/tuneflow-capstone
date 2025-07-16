@@ -6,15 +6,13 @@ export default function QueryCard({ query, setNowPlaying }) {
   const [searchResults, setSearchResults] = useState([]);
 
   useEffect(() => {
-    const { song, artist } = parseInput(query);
-
     async function getSongs() {
       try {
-        const queryParams = new URLSearchParams({ song, artist });
         const response = await axios.get(
-          `http://localhost:3001/api/spotify-search?${queryParams.toString()}`
+          `http://localhost:3001/api/spotify-search?q=${query}`
         );
-        setSearchResults(response.data.results);
+
+        setSearchResults(response.data);
       } catch (error) {
         console.error("Error fetching tracks:", error);
       }
@@ -22,13 +20,6 @@ export default function QueryCard({ query, setNowPlaying }) {
 
     if (query) getSongs();
   }, [query]);
-
-  const parseInput = (input) => {
-    const parts = input.split(" - ");
-    return parts.length === 2
-      ? { artist: parts[0].trim(), song: parts[1].trim() }
-      : { artist: "", song: input.trim() };
-  };
 
   const TrackList = () => {
     if (!searchResults.length) {
@@ -41,8 +32,7 @@ export default function QueryCard({ query, setNowPlaying }) {
       <div className="d-flex flex-column gap-3">
         {searchResults.map((result, index) => {
           function playSong() {
-            const query = `${result.artist} - ${result.title}`;
-            setNowPlaying(query);
+            setNowPlaying(`${result.title} : ${result.artist}`);
           }
 
           return (
@@ -58,7 +48,7 @@ export default function QueryCard({ query, setNowPlaying }) {
 
               {/* Album Art */}
               <Image
-                src={result.image}
+                src={result.cover}
                 alt={result.title}
                 rounded
                 className="me-3"
