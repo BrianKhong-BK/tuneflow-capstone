@@ -42,14 +42,15 @@ export default function MusicNav({ nowPlaying }) {
   useEffect(() => {
     async function playSong() {
       try {
+        const encodedQuery = encodeURIComponent(nowPlaying);
         const response = await axios.get(
-          `http://localhost:3001/api/youtube-search?q=${nowPlaying}`
+          `http://localhost:3001/api/youtube-search?q=${encodedQuery}`
         );
+
         const song = response.data.results;
-        console.log(song);
 
         setSongId(song.videoId);
-        setSongCover(song.thumbnails[1].url);
+        setSongCover(song.thumbnails[1].url.toString());
         setSongTitle(song.name);
         setArtist(song.artist.name);
         setState((prevState) => ({ ...prevState, playing: true }));
