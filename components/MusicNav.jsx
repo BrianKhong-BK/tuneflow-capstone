@@ -1,6 +1,5 @@
 import ReactPlayer from "react-player";
 import { useEffect, useRef, useState } from "react";
-import axios from "axios";
 import {
   Navbar,
   Container,
@@ -40,25 +39,12 @@ export default function MusicNav({ nowPlaying }) {
   const [lastVolume, setLastVolume] = useState(0);
 
   useEffect(() => {
-    async function playSong() {
-      try {
-        const response = await axios.get(
-          `http://localhost:3001/api/youtube-search?q=${nowPlaying}`
-        );
-        const song = response.data.results[0];
-
-        setSongId(song.videoId);
-        setSongCover(song.thumbnails[1].url);
-        setSongTitle(song.name);
-        setArtist(song.artist);
-        setState((prevState) => ({ ...prevState, playing: true }));
-      } catch (error) {
-        console.error("Error playing song", error);
-      }
-    }
-
     if (nowPlaying) {
-      playSong();
+      setSongId(nowPlaying.id);
+      setSongCover(nowPlaying.cover);
+      setSongTitle(nowPlaying.title);
+      setArtist(nowPlaying.artist);
+      setState((prevState) => ({ ...prevState, playing: true }));
     }
   }, [nowPlaying]);
 
@@ -180,7 +166,7 @@ export default function MusicNav({ nowPlaying }) {
             >
               <ReactPlayer
                 ref={playerRef}
-                src={`https://www.youtube.com/watch?v=${songId}`}
+                src={`https://open.spotify.com/track/2lz3zjQ5QCVXiyOzIk02vW`}
                 playing={playing}
                 volume={volume}
                 muted={muted}
@@ -206,7 +192,7 @@ export default function MusicNav({ nowPlaying }) {
                     height: "56px",
                     objectFit: "cover",
                   }}
-                  onDoubleClick={() => console.log(duration)}
+                  onDoubleClick={() => console.log(songId)}
                 />
                 <div className="flex-grow-1">
                   <div className="fw-semibold text-white">{songTitle}</div>
