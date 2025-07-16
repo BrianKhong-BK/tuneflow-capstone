@@ -37,6 +37,7 @@ export default function MusicNav({ nowPlaying }) {
   const [songTitle, setSongTitle] = useState("");
   const [artist, setArtist] = useState("");
   const [state, setState] = useState(initialState);
+  const [lastVolume, setLastVolume] = useState(0);
 
   useEffect(() => {
     async function playSong() {
@@ -61,12 +62,18 @@ export default function MusicNav({ nowPlaying }) {
     }
   }, [nowPlaying]);
 
+  const convertDuration = (duration) => {
+    const s = duration,
+      min = String(Math.floor((s / 60) << 0)),
+      sec = String(Math.floor(s % 60)).padStart(2, "0");
+
+    return min + ":" + sec;
+  };
+
   const handleTimeUpdate = () => {
     const player = playerRef.current;
     // We only want to update time slider if we are not currently seeking
     if (!player || state.seeking) return;
-
-    console.log("onTimeUpdate", player.currentTime);
 
     if (!player.duration) return;
 
@@ -78,34 +85,85 @@ export default function MusicNav({ nowPlaying }) {
   };
 
   const handlePause = () => {
-    console.log("onPause");
     setState((prevState) => ({ ...prevState, playing: false }));
   };
 
   const handlePlay = () => {
-    console.log("onPlay");
     setState((prevState) => ({ ...prevState, playing: true }));
   };
 
   const handleVolumeChange = (event) => {
     const inputTarget = event.target;
-    setState((prev) => ({ ...prev, volume: inputTarget.value }));
+    setState((prev) => ({
+      ...prev,
+      volume: Number.parseFloat(inputTarget.value),
+    }));
   };
 
-  const {
-    src,
-    playing,
-    controls,
-    light,
-    volume,
-    muted,
-    loop,
-    played,
-    loaded,
-    duration,
-    playbackRate,
-    pip,
-  } = state;
+  const handleProgress = () => {
+    const player = playerRef.current;
+    // We only want to update time slider if we are not currently seeking
+    if (!player || state.seeking || !player.buffered?.length) return;
+
+    setState((prevState) => ({
+      ...prevState,
+      loadedSeconds: player.buffered?.end(player.buffered?.length - 1),
+      loaded:
+        player.buffered?.end(player.buffered?.length - 1) / player.duration,
+    }));
+  };
+
+  const handleDurationChange = () => {
+    const player = playerRef.current;
+    if (!player) return;
+
+    setState((prevState) => ({ ...prevState, duration: player.duration }));
+  };
+
+  const handleEnded = () => {
+    setState((prevState) => ({ ...prevState, playing: prevState.loop }));
+  };
+
+  const handleSeekChange = (event) => {
+    const inputTarget = event.target;
+    setState((prevState) => ({
+      ...prevState,
+      played: parseFloat(inputTarget.value),
+    }));
+  };
+
+  const handleSeekMouseDown = () => {
+    setState((prevState) => ({ ...prevState, seeking: true }));
+  };
+
+  const handleSeekMouseUp = (event) => {
+    const inputTarget = event.target;
+    setState((prevState) => ({ ...prevState, seeking: false }));
+    if (playerRef.current) {
+      playerRef.current.currentTime =
+        Number.parseFloat(inputTarget.value) * playerRef.current.duration;
+    }
+  };
+
+  const handleToggleMuted = () => {
+    if (volume > 0 && !muted) {
+      setLastVolume(volume);
+      setState((prevState) => ({ ...prevState, muted: true, volume: 0 }));
+    } else {
+      setState((prevState) => ({
+        ...prevState,
+        muted: false,
+        volume: lastVolume,
+      }));
+      setLastVolume(0);
+    }
+  };
+
+  const handleToggleLoop = () => {
+    setState((prevState) => ({ ...prevState, loop: !prevState.loop }));
+  };
+
+  const { playing, volume, muted, loop, played, duration } = state;
 
   return (
     <Navbar bg="black" variant="dark">
@@ -125,9 +183,14 @@ export default function MusicNav({ nowPlaying }) {
                 src={`https://www.youtube.com/watch?v=${songId}`}
                 playing={playing}
                 volume={volume}
+                muted={muted}
+                controls={false}
                 width="0"
                 height="0"
                 onTimeUpdate={handleTimeUpdate}
+                onProgress={handleProgress}
+                onDurationChange={handleDurationChange}
+                onEnded={handleEnded}
               />
             </div>
           )}
@@ -169,13 +232,17 @@ export default function MusicNav({ nowPlaying }) {
               <Form.Range
                 value={played}
                 min={0}
-                max={duration}
-                step={1000}
+                max={0.999999}
+                step="any"
                 style={{ width: "100%" }}
+                onMouseDown={handleSeekMouseDown}
+                onChange={handleSeekChange}
+                onMouseUp={handleSeekMouseUp}
               />
               {duration && (
                 <div>
-                  {played}/{duration}
+                  {convertDuration(parseInt(played * duration))}/
+                  {convertDuration(duration)}
                 </div>
               )}
             </div>
@@ -186,12 +253,24 @@ export default function MusicNav({ nowPlaying }) {
             md={4}
             className="d-flex align-items-center justify-content-end gap-2"
           >
-            <i className="bi bi-volume-down-fill text-light" />
+            <div>
+              <i className="bi bi-repeat me-2" onClick={handleToggleLoop} />
+              {loop ? "LOOP" : "NO LOOP"}
+            </div>
+            <div onClick={handleToggleMuted}>
+              {volume === 0 ? (
+                <i className="bi bi-volume-mute-fill text-light" />
+              ) : volume < 0.5 ? (
+                <i className="bi bi-volume-down-fill text-light" />
+              ) : (
+                <i className="bi bi-volume-up-fill text-light" />
+              )}
+            </div>
             <Form.Range
               value={volume}
               min={0}
               max={1}
-              step={0.01}
+              step="any"
               style={{ width: "100px" }}
               onChange={handleVolumeChange}
             />
