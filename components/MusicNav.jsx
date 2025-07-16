@@ -47,12 +47,16 @@ export default function MusicNav({ nowPlaying }) {
           `http://localhost:3001/api/youtube-search?q=${encodedQuery}`
         );
 
-        const song = response.data.results;
+        const song = response.data.results[0];
 
         setSongId(song.videoId);
         setSongCover(song.thumbnails[1].url.toString());
         setSongTitle(song.name);
-        setArtist(song.artist.name);
+        setArtist(
+          Array.isArray(song.artist)
+            ? song.artist.map((a) => a.name).toString()
+            : song.artist.name
+        );
         setState((prevState) => ({ ...prevState, playing: true }));
       } catch (error) {
         console.error("Error playing song", error);
