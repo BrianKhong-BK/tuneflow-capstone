@@ -50,13 +50,9 @@ export default function MusicNav({ nowPlaying }) {
         const song = response.data.results[0];
 
         setSongId(song.videoId);
-        setSongCover(song.thumbnails[1].url.toString());
+        setSongCover(song.thumbnails);
         setSongTitle(song.name);
-        setArtist(
-          Array.isArray(song.artist)
-            ? song.artist.map((a) => a.name).toString()
-            : song.artist.name
-        );
+        setArtist(song.artist);
         setState((prevState) => ({ ...prevState, playing: true }));
       } catch (error) {
         console.error("Error playing song", error);
@@ -212,7 +208,7 @@ export default function MusicNav({ nowPlaying }) {
                     height: "56px",
                     objectFit: "cover",
                   }}
-                  onDoubleClick={() => console.log(duration)}
+                  onDoubleClick={() => console.log(artist)}
                 />
                 <div className="flex-grow-1">
                   <div className="fw-semibold text-white">{songTitle}</div>

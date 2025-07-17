@@ -14,6 +14,7 @@ export default function MainPage() {
     <div className="bg-black text-white p-2" style={{ minHeight: "100vh" }}>
       <SearchBar setQuery={setQuery} />
       <Row className="g-3">
+        <PlaylistCard />
         <QueryCard query={query} setNowPlaying={setNowPlaying} />
         <MusicNav nowPlaying={nowPlaying} />
       </Row>

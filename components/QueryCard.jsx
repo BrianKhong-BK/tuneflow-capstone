@@ -83,7 +83,7 @@ export default function QueryCard({ query, setNowPlaying }) {
   };
 
   return (
-    <Col md={12}>
+    <Col md={9}>
       <Card
         className="bg-card-dark text-white shadow rounded-3"
         style={{ height: "80vh" }}
