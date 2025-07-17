@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Card, Col, Row, Image, Container, Button } from "react-bootstrap";
 import axios from "axios";
 
-export default function QueryCard({ query, setNowPlaying }) {
+export default function QueryCard({ query, setNowPlaying, setSongCover }) {
   const [searchResults, setSearchResults] = useState([]);
 
   useEffect(() => {
@@ -33,6 +33,7 @@ export default function QueryCard({ query, setNowPlaying }) {
         {searchResults.map((result, index) => {
           function playSong() {
             setNowPlaying(`${result.title} : ${result.artist}`);
+            setSongCover(result.cover);
           }
 
           return (

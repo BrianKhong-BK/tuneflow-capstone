@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { Navbar, Container, Button, Form } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 
 export default function SearchBar({ setQuery }) {
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
 
   const handleSubmit = (e) => {
@@ -9,6 +11,14 @@ export default function SearchBar({ setQuery }) {
     if (search.trim()) {
       setQuery(search.trim());
     }
+  };
+
+  const handleLogin = () => {
+    navigate("/login");
+  };
+
+  const handleSignup = () => {
+    navigate("/signup");
   };
 
   return (
@@ -45,9 +55,20 @@ export default function SearchBar({ setQuery }) {
           </Button>
         </Form>
 
-        {/* Logout Button */}
-        <Button variant="outline-light" className="rounded-pill px-4">
-          Logout
+        <Button
+          variant="outline-light"
+          className="rounded-pill px-4 mx-2"
+          onClick={handleLogin}
+        >
+          Login
+        </Button>
+
+        <Button
+          variant="outline-light"
+          className="rounded-pill px-4 mx-2"
+          onClick={handleSignup}
+        >
+          Sign Up
         </Button>
       </Container>
     </Navbar>

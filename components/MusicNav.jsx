@@ -11,7 +11,7 @@ import {
   Image,
 } from "react-bootstrap";
 
-export default function MusicNav({ nowPlaying }) {
+export default function MusicNav({ nowPlaying, image }) {
   const playerRef = useRef();
 
   const initialState = {
@@ -50,10 +50,10 @@ export default function MusicNav({ nowPlaying }) {
         const song = response.data.results[0];
 
         setSongId(song.videoId);
-        setSongCover(song.thumbnails);
         setSongTitle(song.name);
         setArtist(song.artist);
         setState((prevState) => ({ ...prevState, playing: true }));
+        setSongCover(image);
       } catch (error) {
         console.error("Error playing song", error);
       }
@@ -62,7 +62,7 @@ export default function MusicNav({ nowPlaying }) {
     if (nowPlaying) {
       playSong();
     }
-  }, [nowPlaying]);
+  }, [nowPlaying, image]);
 
   const convertDuration = (duration) => {
     const s = duration,

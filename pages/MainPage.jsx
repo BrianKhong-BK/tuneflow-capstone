@@ -9,14 +9,19 @@ import MusicNav from "../components/MusicNav";
 export default function MainPage() {
   const [query, setQuery] = useState("");
   const [nowPlaying, setNowPlaying] = useState(null);
+  const [songCover, setSongCover] = useState("");
 
   return (
     <div className="bg-black text-white p-2" style={{ minHeight: "100vh" }}>
       <SearchBar setQuery={setQuery} />
       <Row className="g-3">
         <PlaylistCard />
-        <QueryCard query={query} setNowPlaying={setNowPlaying} />
-        <MusicNav nowPlaying={nowPlaying} />
+        <QueryCard
+          query={query}
+          setNowPlaying={setNowPlaying}
+          setSongCover={setSongCover}
+        />
+        <MusicNav nowPlaying={nowPlaying} image={songCover} />
       </Row>
     </div>
   );
