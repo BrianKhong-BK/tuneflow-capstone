@@ -1,8 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { Card, Col, Row, Image, Container, Button } from "react-bootstrap";
 import axios from "axios";
+import { AuthContext } from "../contexts/AuthContext";
 
 export default function QueryCard({ query, setNowPlaying, setSongCover }) {
+  const { user, token } = useContext(AuthContext);
   const [searchResults, setSearchResults] = useState([]);
 
   useEffect(() => {
@@ -36,6 +38,8 @@ export default function QueryCard({ query, setNowPlaying, setSongCover }) {
             setSongCover(result.cover);
           }
 
+          function addSong() {}
+
           return (
             <div
               key={index}
@@ -68,14 +72,26 @@ export default function QueryCard({ query, setNowPlaying, setSongCover }) {
               </div>
 
               {/* Optional: Play or Add button */}
-              <Button
-                variant="outline-light"
-                size="sm"
-                className="rounded-pill px-3 d-none d-md-block"
-                onClick={playSong}
-              >
-                <i className="bi bi-play-fill"></i>
-              </Button>
+              <div className="d-flex gap-2">
+                {user && (
+                  <Button
+                    variant="outline-light"
+                    size="sm"
+                    className="rounded-pill px-3"
+                    onClick={addSong}
+                  >
+                    <i className="bi bi-download"></i>
+                  </Button>
+                )}
+                <Button
+                  variant="outline-light"
+                  size="sm"
+                  className="rounded-pill px-3"
+                  onClick={playSong}
+                >
+                  <i className="bi bi-play-fill"></i>
+                </Button>
+              </div>
             </div>
           );
         })}

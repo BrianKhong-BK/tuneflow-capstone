@@ -1,6 +1,38 @@
-import { Container, Card, Form, Button, Row, Col } from "react-bootstrap";
+import { useState } from "react";
+import { Container, Card, Form, Button } from "react-bootstrap";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { auth } from "../firebase"; // adjust path if needed
+import { useNavigate } from "react-router-dom";
 
 export default function SignupPage() {
+  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(null);
+    try {
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
+      // Set display name
+      await updateProfile(userCredential.user, {
+        displayName: username,
+      });
+
+      // Redirect or show success message
+      navigate("/"); // redirect to homepage or dashboard
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
   return (
     <Container
       fluid
@@ -14,13 +46,16 @@ export default function SignupPage() {
           Sign up for Tuneflow
         </h2>
 
-        <Form>
+        <Form onSubmit={handleSubmit}>
           <Form.Group className="mb-3" controlId="email">
             <Form.Label>Email address</Form.Label>
             <Form.Control
               type="email"
               placeholder="name@example.com"
               className="rounded-pill"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
             />
           </Form.Group>
 
@@ -30,6 +65,9 @@ export default function SignupPage() {
               type="text"
               placeholder="Your name"
               className="rounded-pill"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
             />
           </Form.Group>
 
@@ -39,8 +77,13 @@ export default function SignupPage() {
               type="password"
               placeholder="••••••••"
               className="rounded-pill"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
             />
           </Form.Group>
+
+          {error && <div className="text-danger text-center mb-2">{error}</div>}
 
           <Button
             type="submit"

@@ -1,8 +1,12 @@
-import { useState } from "react";
+import { auth } from "../firebase";
+import { signOut } from "firebase/auth";
+import { useState, useContext } from "react";
 import { Navbar, Container, Button, Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../contexts/AuthContext";
 
 export default function SearchBar({ setQuery }) {
+  const { user, setUser, setToken } = useContext(AuthContext);
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
 
@@ -19,6 +23,16 @@ export default function SearchBar({ setQuery }) {
 
   const handleSignup = () => {
     navigate("/signup");
+  };
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      setUser(null); // clear user in context
+      setToken(null); // clear token in context
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
   };
 
   return (
@@ -54,22 +68,35 @@ export default function SearchBar({ setQuery }) {
             <i className="bi bi-search" />
           </Button>
         </Form>
+        <div>
+          {!user ? (
+            <>
+              <Button
+                variant="outline-light"
+                className="rounded-pill px-4 mx-2"
+                onClick={handleLogin}
+              >
+                Login
+              </Button>
 
-        <Button
-          variant="outline-light"
-          className="rounded-pill px-4 mx-2"
-          onClick={handleLogin}
-        >
-          Login
-        </Button>
-
-        <Button
-          variant="outline-light"
-          className="rounded-pill px-4 mx-2"
-          onClick={handleSignup}
-        >
-          Sign Up
-        </Button>
+              <Button
+                variant="outline-light"
+                className="rounded-pill px-4 mx-2"
+                onClick={handleSignup}
+              >
+                Sign Up
+              </Button>
+            </>
+          ) : (
+            <Button
+              variant="outline-light"
+              className="rounded-pill px-4 mx-2"
+              onClick={handleLogout}
+            >
+              Logout
+            </Button>
+          )}
+        </div>
       </Container>
     </Navbar>
   );
