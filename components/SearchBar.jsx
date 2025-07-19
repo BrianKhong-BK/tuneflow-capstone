@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
 
 export default function SearchBar({ setQuery }) {
-  const { user, setUser, setToken } = useContext(AuthContext);
+  const { user, setLoading } = useContext(AuthContext);
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
 
@@ -28,8 +28,7 @@ export default function SearchBar({ setQuery }) {
   const handleLogout = async () => {
     try {
       await signOut(auth);
-      setUser(null); // clear user in context
-      setToken(null); // clear token in context
+      setLoading(true);
     } catch (error) {
       console.error("Logout error:", error);
     }

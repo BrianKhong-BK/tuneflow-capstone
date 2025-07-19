@@ -24,10 +24,12 @@ export function AuthProvider({ children }) {
     });
 
     return unsubscribe;
-  }, []);
+  }, [user]);
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, setUser, setToken }}>
+    <AuthContext.Provider
+      value={{ user, token, loading, setUser, setToken, setLoading }}
+    >
       {loading ? <LoadingPage /> : children}
     </AuthContext.Provider>
   );
