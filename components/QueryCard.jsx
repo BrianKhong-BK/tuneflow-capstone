@@ -12,7 +12,12 @@ import {
 import axios from "axios";
 import { AuthContext } from "../contexts/AuthContext";
 
-export default function QueryCard({ query, setNowPlaying, setSongCover }) {
+export default function QueryCard({
+  query,
+  setNowPlaying,
+  setSongCover,
+  setSongs,
+}) {
   const { user, token } = useContext(AuthContext);
   const [searchResults, setSearchResults] = useState([]);
   const [showModal, setShowModal] = useState(false);
@@ -89,6 +94,7 @@ export default function QueryCard({ query, setNowPlaying, setSongCover }) {
           function playSong() {
             setNowPlaying(`${result.title} : ${result.artist}`);
             setSongCover(result.cover);
+            setSongs([]);
           }
 
           return (

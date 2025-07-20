@@ -1,14 +1,12 @@
 import { Button, Row } from "react-bootstrap";
-import { useState, useContext } from "react";
+import { useState } from "react";
 import SearchBar from "../components/SearchBar";
 import QueryCard from "../components/QueryCard";
 import PlaylistCard from "../components/PlaylistCard";
 import MusicNav from "../components/MusicNav";
 import PlaylistSongCard from "../components/PlaylistSongCard";
-import { AuthContext } from "../contexts/AuthContext";
 
 export default function MainPage() {
-  const { user, token, loading } = useContext(AuthContext);
   const [query, setQuery] = useState("");
   const [nowPlaying, setNowPlaying] = useState(null);
   const [songCover, setSongCover] = useState("");
@@ -39,12 +37,14 @@ export default function MainPage() {
             query={query}
             setNowPlaying={setNowPlaying}
             setSongCover={setSongCover}
+            setSongs={setSongs}
           />
         )}
         <MusicNav
           nowPlaying={nowPlaying}
           setNowPlaying={setNowPlaying}
-          image={songCover}
+          songCover={songCover}
+          setSongCover={setSongCover}
           songs={songs}
           setSongs={setSongs}
           currentIndex={currentIndex}

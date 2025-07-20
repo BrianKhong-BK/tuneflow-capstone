@@ -13,7 +13,8 @@ import {
 
 export default function MusicNav({
   nowPlaying,
-  image,
+  songCover,
+  setSongCover,
   songs,
   currentIndex,
   setCurrentIndex,
@@ -40,9 +41,11 @@ export default function MusicNav({
   };
 
   const [songId, setSongId] = useState(null);
-  const [songCover, setSongCover] = useState("");
-  const [songTitle, setSongTitle] = useState("");
-  const [artist, setArtist] = useState("");
+  const [currentSongInfo, setCurrentSongInfo] = useState({
+    cover: "",
+    title: "",
+    artist: "",
+  });
   const [state, setState] = useState(initialState);
   const [lastVolume, setLastVolume] = useState(0);
 
@@ -58,10 +61,12 @@ export default function MusicNav({
         const song = response.data.results[0];
 
         setSongId(song.videoId);
-        setSongTitle(song.name);
-        setArtist(song.artist);
         setState((prevState) => ({ ...prevState, playing: true }));
-        setSongCover(image);
+        setCurrentSongInfo({
+          cover: songCover,
+          title: song.name,
+          artist: song.artist,
+        });
       } catch (error) {
         console.error("Error playing song", error);
       }
@@ -70,7 +75,7 @@ export default function MusicNav({
     if (nowPlaying) {
       playSong();
     }
-  }, [nowPlaying, image]);
+  }, [nowPlaying, songCover]);
 
   const convertDuration = (duration) => {
     const s = duration,
@@ -182,6 +187,24 @@ export default function MusicNav({
     setState((prevState) => ({ ...prevState, loop: !prevState.loop }));
   };
 
+  const handleNext = () => {
+    if (songs.length === 0) return;
+    const nextIndex = (currentIndex + 1) % songs.length;
+    setCurrentIndex(nextIndex);
+    const nextSong = songs[nextIndex];
+    setNowPlaying(`${nextSong.title} : ${nextSong.artist}`);
+    setSongCover(nextSong.thumbnail);
+  };
+
+  const handlePrevious = () => {
+    if (songs.length === 0) return;
+    const prevIndex = (currentIndex - 1 + songs.length) % songs.length;
+    setCurrentIndex(prevIndex);
+    const prevSong = songs[prevIndex];
+    setNowPlaying(`${prevSong.title} : ${prevSong.artist}`);
+    setSongCover(prevSong.thumbnail);
+  };
+
   const { playing, volume, muted, loop, played, duration } = state;
 
   return (
@@ -214,10 +237,10 @@ export default function MusicNav({
             </div>
           )}
           <Col md={4}>
-            {songCover && (
+            {currentSongInfo.cover && (
               <div className="d-flex align-items-center">
                 <Image
-                  src={songCover}
+                  src={currentSongInfo.cover}
                   rounded
                   className="me-3"
                   style={{
@@ -225,11 +248,14 @@ export default function MusicNav({
                     height: "56px",
                     objectFit: "cover",
                   }}
-                  onDoubleClick={() => console.log(artist)}
                 />
                 <div className="flex-grow-1">
-                  <div className="fw-semibold text-white">{songTitle}</div>
-                  <div className="text-white-50 small">{artist}</div>
+                  <div className="fw-semibold text-white">
+                    {currentSongInfo.title}
+                  </div>
+                  <div className="text-white-50 small">
+                    {currentSongInfo.artist}
+                  </div>
                 </div>
               </div>
             )}
@@ -238,6 +264,10 @@ export default function MusicNav({
           {/* Center: Play + Time Slider */}
           <Col md={4}>
             <div className="d-flex align-items-center justify-content-center gap-3">
+              <Button variant="outline-light" onClick={handlePrevious}>
+                <i className="bi bi-skip-start-fill" />
+              </Button>
+
               <Button
                 variant="outline-light"
                 onClick={playing ? handlePause : handlePlay}
@@ -248,6 +278,11 @@ export default function MusicNav({
                   <i className="bi bi-play-fill" />
                 )}
               </Button>
+
+              <Button variant="outline-light" onClick={handleNext}>
+                <i className="bi bi-skip-end-fill" />
+              </Button>
+
               <Form.Range
                 value={played}
                 min={0}

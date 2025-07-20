@@ -1,6 +1,6 @@
 // src/providers/AuthProvider.jsx
 import { useEffect, useState } from "react";
-import { onAuthStateChanged, getIdToken } from "firebase/auth";
+import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../firebase"; // your firebase config file
 import { AuthContext } from "../contexts/AuthContext";
 import LoadingPage from "../pages/LoadingPage";
