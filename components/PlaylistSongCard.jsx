@@ -4,19 +4,22 @@ import axios from "axios";
 import { AuthContext } from "../contexts/AuthContext";
 
 export default function PlaylistSongCard({
-  playlistId,
+  selectedPlaylistId,
   setNowPlaying,
   setSongCover,
+  songs,
+  setSongs,
+  currentIndex,
+  setCurrentIndex,
 }) {
   const { token } = useContext(AuthContext);
-  const [songs, setSongs] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchPlaylistSongs() {
       try {
         const res = await axios.get(
-          `http://localhost:3000/api/playlists/${playlistId}/songs`,
+          `http://localhost:3000/api/playlists/${selectedPlaylistId}/songs`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -28,14 +31,24 @@ export default function PlaylistSongCard({
         console.error("Failed to load playlist songs", error);
       } finally {
         setLoading(false);
+        setCurrentIndex(0);
       }
     }
 
-    if (playlistId) {
+    if (selectedPlaylistId) {
       setLoading(true);
       fetchPlaylistSongs();
     }
-  }, [playlistId, token]);
+  }, [selectedPlaylistId]);
+
+  const handlePlayAll = () => {
+    if (songs.length > 0) {
+      setCurrentIndex(0);
+      const current = songs[0];
+      setNowPlaying(`${current.title} : ${current.artist}`);
+      setSongCover(current.thumbnail);
+    }
+  };
 
   const SongList = () => {
     if (loading) {
@@ -114,6 +127,21 @@ export default function PlaylistSongCard({
           <h5 className="mb-0">Playlist Songs</h5>
         </Card.Header>
         <Card.Body style={{ overflowY: "auto" }}>
+          {songs.length > 0 && (
+            <Card className="bg-dark text-light">
+              <Card.Body className="d-flex justify-content-between align-items-center">
+                <h5 className="mb-0">Playlist Player</h5>
+                <Button
+                  variant="success"
+                  size="sm"
+                  className="rounded-pill px-4"
+                  onClick={handlePlayAll}
+                >
+                  Play All
+                </Button>
+              </Card.Body>
+            </Card>
+          )}
           <Container fluid>
             <SongList />
           </Container>

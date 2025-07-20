@@ -11,7 +11,14 @@ import {
   Image,
 } from "react-bootstrap";
 
-export default function MusicNav({ nowPlaying, image }) {
+export default function MusicNav({
+  nowPlaying,
+  image,
+  songs,
+  currentIndex,
+  setCurrentIndex,
+  setNowPlaying,
+}) {
   const playerRef = useRef();
 
   const initialState = {
@@ -42,6 +49,7 @@ export default function MusicNav({ nowPlaying, image }) {
   useEffect(() => {
     async function playSong() {
       try {
+        console.log(nowPlaying);
         const encodedQuery = encodeURIComponent(nowPlaying);
         const response = await axios.get(
           `http://localhost:3001/api/youtube-search?q=${encodedQuery}`
@@ -123,7 +131,16 @@ export default function MusicNav({ nowPlaying, image }) {
   };
 
   const handleEnded = () => {
-    setState((prevState) => ({ ...prevState, playing: prevState.loop }));
+    if (currentIndex + 1 < songs.length) {
+      setState((prevState) => ({ ...prevState, playing: false }));
+      const nextIndex = (currentIndex + 1) % songs.length;
+      setCurrentIndex(nextIndex);
+      const nextSong = songs[nextIndex];
+      setNowPlaying(`${nextSong.title} : ${nextSong.artist}`);
+      setSongCover(nextSong.thumbnail);
+    } else {
+      setState((prevState) => ({ ...prevState, playing: false }));
+    }
   };
 
   const handleSeekChange = (event) => {

@@ -13,6 +13,8 @@ export default function MainPage() {
   const [nowPlaying, setNowPlaying] = useState(null);
   const [songCover, setSongCover] = useState("");
   const [selectedPlaylistId, setSelectedPlaylistId] = useState("");
+  const [songs, setSongs] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   return (
     <div className="bg-black text-white p-2" style={{ minHeight: "100vh" }}>
@@ -24,9 +26,13 @@ export default function MainPage() {
         <PlaylistCard setSelectedPlaylistId={setSelectedPlaylistId} />
         {selectedPlaylistId ? (
           <PlaylistSongCard
-            playlistId={selectedPlaylistId}
+            selectedPlaylistId={selectedPlaylistId}
             setNowPlaying={setNowPlaying}
             setSongCover={setSongCover}
+            songs={songs}
+            setSongs={setSongs}
+            currentIndex={currentIndex}
+            setCurrentIndex={setCurrentIndex}
           />
         ) : (
           <QueryCard
@@ -35,7 +41,15 @@ export default function MainPage() {
             setSongCover={setSongCover}
           />
         )}
-        <MusicNav nowPlaying={nowPlaying} image={songCover} />
+        <MusicNav
+          nowPlaying={nowPlaying}
+          setNowPlaying={setNowPlaying}
+          image={songCover}
+          songs={songs}
+          setSongs={setSongs}
+          currentIndex={currentIndex}
+          setCurrentIndex={setCurrentIndex}
+        />
       </Row>
     </div>
   );
