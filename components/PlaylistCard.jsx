@@ -1,9 +1,17 @@
 import { useState, useContext, useEffect } from "react";
 import axios from "axios";
-import { Card, Col, Button, Modal, Form } from "react-bootstrap";
+import {
+  Card,
+  Col,
+  Button,
+  Modal,
+  Form,
+  Badge,
+  Container,
+} from "react-bootstrap";
 import { AuthContext } from "../contexts/AuthContext";
 
-export default function PlaylistCard() {
+export default function PlaylistCard({ setSelectedPlaylistId }) {
   const { token } = useContext(AuthContext);
   const [showModal, setShowModal] = useState(false);
   const [playlistName, setPlaylistName] = useState("");
@@ -81,20 +89,39 @@ export default function PlaylistCard() {
             <p className="text-muted">No playlists yet.</p>
           ) : (
             playlists.map((playlist) => (
-              <div
+              <Card
                 key={playlist.id}
-                className="mb-3 p-2 bg-dark rounded border border-secondary"
+                bg="dark"
+                text="light"
+                className="mb-3 border border-secondary"
               >
-                <h6 className="mb-1">{playlist.name}</h6>
-                {playlist.description && (
-                  <p className="mb-1 text-muted" style={{ fontSize: "0.9rem" }}>
-                    {playlist.description}
-                  </p>
-                )}
-                <small className="text-muted">
-                  {playlist.is_public ? "Public" : "Private"}
-                </small>
-              </div>
+                <Card.Body>
+                  <Card.Title className="mb-1">{playlist.name}</Card.Title>
+
+                  {playlist.description && (
+                    <Card.Text
+                      className="text-muted mb-2"
+                      style={{ fontSize: "0.9rem" }}
+                    >
+                      {playlist.description}
+                    </Card.Text>
+                  )}
+
+                  <div className="d-flex justify-content-between align-items-center">
+                    <Badge bg={playlist.is_public ? "success" : "secondary"}>
+                      {playlist.is_public ? "Public" : "Private"}
+                    </Badge>
+
+                    <Button
+                      variant="outline-light"
+                      size="sm"
+                      onClick={() => setSelectedPlaylistId(playlist.id)}
+                    >
+                      Open Playlist
+                    </Button>
+                  </div>
+                </Card.Body>
+              </Card>
             ))
           )}
         </Card.Body>

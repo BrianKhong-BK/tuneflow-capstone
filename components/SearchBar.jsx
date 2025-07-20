@@ -5,7 +5,7 @@ import { Navbar, Container, Button, Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
 
-export default function SearchBar({ setQuery }) {
+export default function SearchBar({ setQuery, setSelectedPlaylistId }) {
   const { user, setLoading } = useContext(AuthContext);
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
@@ -15,6 +15,7 @@ export default function SearchBar({ setQuery }) {
     if (search.trim()) {
       setQuery(search.trim());
     }
+    setSelectedPlaylistId("");
   };
 
   const handleLogin = () => {
