@@ -146,6 +146,10 @@ export default function MusicNav({
     } else {
       setState((prevState) => ({ ...prevState, playing: false }));
     }
+
+    if (state.loop) {
+      setState((prevState) => ({ ...prevState, playing: true }));
+    }
   };
 
   const handleSeekChange = (event) => {
