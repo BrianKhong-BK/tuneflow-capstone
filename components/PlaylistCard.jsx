@@ -18,6 +18,8 @@ export default function PlaylistCard({ setSelectedPlaylistId }) {
   const [playlistDescription, setPlaylistDescription] = useState("");
   const [isPublic, setIsPublic] = useState(false);
   const [playlists, setPlaylists] = useState([]);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [playlistToDelete, setPlaylistToDelete] = useState(null);
 
   useEffect(() => {
     if (token) {
@@ -62,6 +64,32 @@ export default function PlaylistCard({ setSelectedPlaylistId }) {
       setPlaylistDescription("");
       setIsPublic(false);
       fetchPlaylists();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const confirmDelete = (playlist) => {
+    setPlaylistToDelete(playlist);
+    setShowDeleteModal(true);
+  };
+
+  const handleDelete = async () => {
+    if (!playlistToDelete) return;
+
+    try {
+      await axios.delete(
+        `http://localhost:3000/api/playlists/${playlistToDelete.id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      fetchPlaylists();
+      setShowDeleteModal(false);
+      setPlaylistToDelete(null);
     } catch (err) {
       console.error(err);
     }
@@ -112,13 +140,22 @@ export default function PlaylistCard({ setSelectedPlaylistId }) {
                       {playlist.is_public ? "Public" : "Private"}
                     </Badge>
 
-                    <Button
-                      variant="outline-light"
-                      size="sm"
-                      onClick={() => setSelectedPlaylistId(playlist.id)}
-                    >
-                      Open Playlist
-                    </Button>
+                    <div className="d-flex gap-2">
+                      <Button
+                        variant="outline-danger"
+                        size="sm"
+                        onClick={() => confirmDelete(playlist)}
+                      >
+                        Delete
+                      </Button>
+                      <Button
+                        variant="outline-light"
+                        size="sm"
+                        onClick={() => setSelectedPlaylistId(playlist.id)}
+                      >
+                        Open Playlist
+                      </Button>
+                    </div>
                   </div>
                 </Card.Body>
               </Card>
@@ -180,6 +217,32 @@ export default function PlaylistCard({ setSelectedPlaylistId }) {
             disabled={!playlistName.trim()}
           >
             Create
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal
+        show={showDeleteModal}
+        onHide={() => setShowDeleteModal(false)}
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Delete Playlist</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {playlistToDelete && (
+            <p>
+              Are you sure you want to delete{" "}
+              <strong>{playlistToDelete.name}</strong>?
+            </p>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
+            Cancel
+          </Button>
+          <Button variant="danger" onClick={handleDelete}>
+            Delete
           </Button>
         </Modal.Footer>
       </Modal>
