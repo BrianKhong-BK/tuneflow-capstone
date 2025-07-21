@@ -15,7 +15,7 @@ export default function NowPlayingCard({ nowPlaying, backgroundColor }) {
     async function playSong() {
       try {
         const response = await axios.get(
-          `http://localhost:3001/api/youtube-search?q=${nowPlaying}`
+          `http://localhost:3000/api/youtube-search?q=${nowPlaying}`
         );
         setSong(response.data.results[0]);
         setPlaying(true); // auto play when song loads

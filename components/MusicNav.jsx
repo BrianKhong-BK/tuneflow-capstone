@@ -52,10 +52,9 @@ export default function MusicNav({
   useEffect(() => {
     async function playSong() {
       try {
-        console.log(nowPlaying);
         const encodedQuery = encodeURIComponent(nowPlaying);
         const response = await axios.get(
-          `http://localhost:3001/api/youtube-search?q=${encodedQuery}`
+          `http://localhost:3000/api/youtube-search?q=${encodedQuery}`
         );
 
         const song = response.data.results[0];

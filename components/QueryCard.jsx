@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState, useContext, useRef } from "react";
 import {
   Card,
   Col,
@@ -24,21 +24,72 @@ export default function QueryCard({
   const [playlists, setPlaylists] = useState([]);
   const [selectedTrack, setSelectedTrack] = useState(null);
   const [selectedPlaylistId, setSelectedPlaylistId] = useState(null);
+  const [offset, setOffset] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const [loading, setLoading] = useState(false); // prevent double loading
+  const scrollRef = useRef(null);
 
   useEffect(() => {
-    async function getSongs() {
+    setSearchResults([]);
+    setOffset(0);
+    setHasMore(true);
+    setLoading(false);
+
+    async function initialLoad() {
       try {
-        const response = await axios.get(
-          `http://localhost:3001/api/spotify-search?q=${query}`
+        setLoading(true);
+        const res = await axios.get(
+          `http://localhost:3000/api/spotify-search?q=${query}&offset=0`
         );
-        setSearchResults(response.data);
-      } catch (error) {
-        console.error("Error fetching tracks:", error);
+        setSearchResults(res.data.items);
+        setHasMore(res.data.hasNextPage);
+        setOffset(30);
+      } catch (err) {
+        console.error("Initial load failed", err);
+      } finally {
+        setLoading(false);
       }
     }
 
-    if (query) getSongs();
+    if (query) initialLoad();
   }, [query]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const el = scrollRef.current;
+      if (!el || loading || !hasMore) return;
+
+      const { scrollTop, scrollHeight, clientHeight } = el;
+      if (scrollTop + clientHeight >= scrollHeight - 100) {
+        loadNextPage(); // call only on scroll
+      }
+    };
+
+    const el = scrollRef.current;
+    if (el) el.addEventListener("scroll", handleScroll);
+
+    return () => {
+      if (el) el.removeEventListener("scroll", handleScroll);
+    };
+  }, [hasMore, loading]);
+
+  async function loadNextPage() {
+    if (loading || !hasMore) return;
+
+    try {
+      setLoading(true);
+      const res = await axios.get(
+        `http://localhost:3000/api/spotify-search?q=${query}&offset=${offset}`
+      );
+      setSearchResults((prev) => [...prev, ...res.data.items]);
+      setHasMore(res.data.hasNextPage);
+      setOffset((prev) => prev + 30);
+    } catch (err) {
+      console.error("Failed to load next page", err);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   async function addSong(track) {
     try {
@@ -161,7 +212,7 @@ export default function QueryCard({
           <Card.Header className="border-bottom border-secondary">
             <h5 className="mb-0">Search Results</h5>
           </Card.Header>
-          <Card.Body style={{ overflowY: "auto" }}>
+          <Card.Body style={{ overflowY: "auto" }} ref={scrollRef}>
             <Container fluid>
               <TrackList />
             </Container>
