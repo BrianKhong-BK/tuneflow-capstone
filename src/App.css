@@ -2,6 +2,10 @@
   background-color: #0d0d0d;
 }
 
+.icon-dark {
+  color: rgb(150, 150, 150);
+}
+
 body,
 html {
   height: 100%;
@@ -29,4 +33,117 @@ html {
 /* On hover */
 ::-webkit-scrollbar-thumb:hover {
   background-color: rgba(255, 255, 255, 0.4);
+}
+
+/* Track items on hover */
+.track-item {
+  transition: background-color 0.2s ease;
+}
+
+.track-item:hover {
+  background-color: rgba(255, 255, 255, 0.05); /* slightly lighter */
+}
+
+.track-actions .add-btn {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.track-item:hover .add-btn {
+  opacity: 1;
+}
+
+.add-btn:hover {
+  color: white;
+}
+
+/* Play button on hover */
+.track-hover .index-play {
+  display: none;
+  font-size: 1.25rem;
+}
+
+.track-hover .index-number {
+  display: block;
+  font-size: 1rem;
+}
+
+.track-hover:hover .index-number {
+  display: none;
+}
+
+.track-hover:hover .index-play {
+  display: block;
+}
+
+.index-play:hover {
+  color: white;
+}
+
+/* Music nav bar */
+/* General dark theme */
+.playbar-navbar {
+  background-color: #121212;
+  border-top: 1px solid #282828;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+}
+
+/* Song Info Section */
+.song-info {
+  color: white;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.song-info .title {
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.song-info .artist {
+  color: #b3b3b3;
+  font-size: 0.8rem;
+}
+
+/* Play Controls */
+.play-controls .btn {
+  background-color: transparent;
+  color: white;
+  border: none;
+}
+
+.play-controls .btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Progress Bar */
+.progress-range {
+  flex-grow: 1;
+  max-width: 300px;
+}
+
+/* Time display */
+.time-display {
+  color: #b3b3b3;
+  font-size: 0.75rem;
+  min-width: 60px;
+}
+
+/* Volume */
+.volume-controls {
+  min-width: 160px;
+  color: white;
+}
+
+.volume-controls i {
+  cursor: pointer;
+  font-size: 1.2rem;
+}
+
+/* Repeat */
+.repeat-toggle {
+  color: #b3b3b3;
+  cursor: pointer;
+  font-size: 0.85rem;
 }

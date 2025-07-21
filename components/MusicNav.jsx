@@ -20,15 +20,14 @@ export default function MusicNav({
   setCurrentIndex,
   setNowPlaying,
 }) {
-  const playerRef = useRef();
-
+  //Initial state for react-player
   const initialState = {
     src: undefined,
     pip: false,
     playing: false,
     controls: false,
     light: false,
-    volume: 1,
+    volume: 0.7,
     muted: false,
     played: 0,
     loaded: 0,
@@ -48,7 +47,9 @@ export default function MusicNav({
   });
   const [state, setState] = useState(initialState);
   const [lastVolume, setLastVolume] = useState(0);
+  const playerRef = useRef();
 
+  //Get songs info from youtube-music-api
   useEffect(() => {
     async function playSong() {
       try {
@@ -76,6 +77,7 @@ export default function MusicNav({
     }
   }, [nowPlaying, songCover]);
 
+  //Convert ms to min + sec
   const convertDuration = (duration) => {
     const s = duration,
       min = String(Math.floor((s / 60) << 0)),
@@ -84,9 +86,9 @@ export default function MusicNav({
     return min + ":" + sec;
   };
 
+  //Update time duration as song plays
   const handleTimeUpdate = () => {
     const player = playerRef.current;
-    // We only want to update time slider if we are not currently seeking
     if (!player || state.seeking) return;
 
     if (!player.duration) return;
@@ -98,14 +100,17 @@ export default function MusicNav({
     }));
   };
 
+  //Pause songs
   const handlePause = () => {
     setState((prevState) => ({ ...prevState, playing: false }));
   };
 
+  //Play songs
   const handlePlay = () => {
     setState((prevState) => ({ ...prevState, playing: true }));
   };
 
+  //Change volume
   const handleVolumeChange = (event) => {
     const inputTarget = event.target;
     setState((prev) => ({
@@ -114,9 +119,9 @@ export default function MusicNav({
     }));
   };
 
+  //Update buffer progress bar
   const handleProgress = () => {
     const player = playerRef.current;
-    // We only want to update time slider if we are not currently seeking
     if (!player || state.seeking || !player.buffered?.length) return;
 
     setState((prevState) => ({
@@ -127,6 +132,7 @@ export default function MusicNav({
     }));
   };
 
+  //
   const handleDurationChange = () => {
     const player = playerRef.current;
     if (!player) return;
@@ -134,6 +140,7 @@ export default function MusicNav({
     setState((prevState) => ({ ...prevState, duration: player.duration }));
   };
 
+  //Handle event after player ended
   const handleEnded = () => {
     if (currentIndex + 1 < songs.length) {
       setState((prevState) => ({ ...prevState, playing: false }));
@@ -151,6 +158,7 @@ export default function MusicNav({
     }
   };
 
+  //Change played timestamp when seeking
   const handleSeekChange = (event) => {
     const inputTarget = event.target;
     setState((prevState) => ({
@@ -159,10 +167,12 @@ export default function MusicNav({
     }));
   };
 
+  //Handle event when mouse is hold
   const handleSeekMouseDown = () => {
     setState((prevState) => ({ ...prevState, seeking: true }));
   };
 
+  //Handle event when mouse is release
   const handleSeekMouseUp = (event) => {
     const inputTarget = event.target;
     setState((prevState) => ({ ...prevState, seeking: false }));
@@ -172,6 +182,7 @@ export default function MusicNav({
     }
   };
 
+  //Toggle mute
   const handleToggleMuted = () => {
     if (volume > 0 && !muted) {
       setLastVolume(volume);
@@ -186,10 +197,12 @@ export default function MusicNav({
     }
   };
 
+  //Toggle loop
   const handleToggleLoop = () => {
     setState((prevState) => ({ ...prevState, loop: !prevState.loop }));
   };
 
+  //Play next song in playlist
   const handleNext = () => {
     if (songs.length === 0) return;
     const nextIndex = (currentIndex + 1) % songs.length;
@@ -199,6 +212,7 @@ export default function MusicNav({
     setSongCover(nextSong.thumbnail);
   };
 
+  //Play previous song in playlist
   const handlePrevious = () => {
     if (songs.length === 0) return;
     const prevIndex = (currentIndex - 1 + songs.length) % songs.length;
@@ -246,35 +260,24 @@ export default function MusicNav({
                   src={currentSongInfo.cover}
                   rounded
                   className="me-3"
-                  style={{
-                    width: "56px",
-                    height: "56px",
-                    objectFit: "cover",
-                  }}
+                  style={{ width: "56px", height: "56px", objectFit: "cover" }}
                 />
-                <div className="flex-grow-1">
-                  <div className="fw-semibold text-white">
-                    {currentSongInfo.title}
-                  </div>
-                  <div className="text-white-50 small">
-                    {currentSongInfo.artist}
-                  </div>
+                <div className="song-info">
+                  <div className="title">{currentSongInfo.title}</div>
+                  <div className="artist">{currentSongInfo.artist}</div>
                 </div>
               </div>
             )}
           </Col>
 
-          {/* Center: Play + Time Slider */}
+          {/* Center: Controls + Progress */}
           <Col md={4}>
-            <div className="d-flex align-items-center justify-content-center gap-3">
-              <Button variant="outline-light" onClick={handlePrevious}>
+            <div className="d-flex align-items-center justify-content-center gap-3 play-controls">
+              <Button onClick={handlePrevious}>
                 <i className="bi bi-skip-start-fill" />
               </Button>
 
-              <Button
-                variant="outline-light"
-                onClick={playing ? handlePause : handlePlay}
-              >
+              <Button onClick={playing ? handlePause : handlePlay}>
                 {playing ? (
                   <i className="bi bi-pause-fill" />
                 ) : (
@@ -282,22 +285,22 @@ export default function MusicNav({
                 )}
               </Button>
 
-              <Button variant="outline-light" onClick={handleNext}>
+              <Button onClick={handleNext}>
                 <i className="bi bi-skip-end-fill" />
               </Button>
 
               <Form.Range
+                className="progress-range"
                 value={played}
                 min={0}
                 max={0.999999}
                 step="any"
-                style={{ width: "100%" }}
                 onMouseDown={handleSeekMouseDown}
                 onChange={handleSeekChange}
                 onMouseUp={handleSeekMouseUp}
               />
-              {duration && (
-                <div>
+              {duration !== 0 && (
+                <div className="time-display">
                   {convertDuration(parseInt(played * duration))}/
                   {convertDuration(duration)}
                 </div>
@@ -305,22 +308,22 @@ export default function MusicNav({
             </div>
           </Col>
 
-          {/* Right: Volume */}
+          {/* Right: Volume & Loop */}
           <Col
             md={4}
-            className="d-flex align-items-center justify-content-end gap-2"
+            className="d-flex align-items-center justify-content-end gap-3 volume-controls"
           >
-            <div>
-              <i className="bi bi-repeat me-2" onClick={handleToggleLoop} />
+            <div className="repeat-toggle" onClick={handleToggleLoop}>
+              <i className="bi bi-repeat me-1" />
               {loop ? "LOOP" : "NO LOOP"}
             </div>
             <div onClick={handleToggleMuted}>
               {volume === 0 ? (
-                <i className="bi bi-volume-mute-fill text-light" />
+                <i className="bi bi-volume-mute-fill" />
               ) : volume < 0.5 ? (
-                <i className="bi bi-volume-down-fill text-light" />
+                <i className="bi bi-volume-down-fill" />
               ) : (
-                <i className="bi bi-volume-up-fill text-light" />
+                <i className="bi bi-volume-up-fill" />
               )}
             </div>
             <Form.Range

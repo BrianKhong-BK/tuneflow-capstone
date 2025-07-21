@@ -1,13 +1,21 @@
 import { auth } from "../firebase";
 import { signOut } from "firebase/auth";
 import { useState, useContext } from "react";
-import { Navbar, Container, Button, Form } from "react-bootstrap";
+import {
+  Navbar,
+  Container,
+  Button,
+  Form,
+  Row,
+  Col,
+  InputGroup,
+} from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
 
 export default function SearchBar({ setQuery, setSelectedPlaylistId }) {
-  const { user, setLoading } = useContext(AuthContext);
   const navigate = useNavigate();
+  const { user, setLoading } = useContext(AuthContext);
   const [search, setSearch] = useState("");
 
   const handleSubmit = (e) => {
@@ -18,13 +26,8 @@ export default function SearchBar({ setQuery, setSelectedPlaylistId }) {
     setSelectedPlaylistId("");
   };
 
-  const handleLogin = () => {
-    navigate("/login");
-  };
-
-  const handleSignup = () => {
-    navigate("/signup");
-  };
+  const handleLogin = () => navigate("/login");
+  const handleSignup = () => navigate("/signup");
 
   const handleLogout = async () => {
     try {
@@ -36,67 +39,75 @@ export default function SearchBar({ setQuery, setSelectedPlaylistId }) {
   };
 
   return (
-    <Navbar bg="black" variant="dark" className="py-3">
-      <Container
-        fluid
-        className="d-flex justify-content-between align-items-center"
-      >
-        {/* Brand */}
-        <Navbar.Brand className="fw-bold">Test</Navbar.Brand>
-
-        {/* Search Input */}
-        <Form
-          onSubmit={handleSubmit}
-          className="d-flex align-items-center gap-2 flex-grow-1 mx-4 justify-content-center"
-        >
-          <Form.Control
-            id="queryInput"
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder='e.g. "Aimer - Brave Shine" or just "Unravel"'
-            className="border-secondary rounded-pill px-3 custom-placeholder"
-            style={{ maxWidth: "500px", flexGrow: 1 }}
-          />
-
-          <Button
-            variant="outline-light"
-            type="submit"
-            disabled={!search.trim()}
-            className="rounded-pill"
+    <Navbar bg="black" variant="dark" className="py-3 shadow-sm sticky-top">
+      <Container fluid>
+        <Row className="w-100 align-items-center">
+          {/* Brand */}
+          <Col
+            xs={12}
+            md={4}
+            className="text-center text-md-start mb-2 mb-md-0"
           >
-            <i className="bi bi-search" />
-          </Button>
-        </Form>
-        <div>
-          {!user ? (
-            <>
-              <Button
-                variant="outline-light"
-                className="rounded-pill px-4 mx-2"
-                onClick={handleLogin}
-              >
-                Login
-              </Button>
+            <Navbar.Brand className="fw-bold fs-4">🎵 TuneFlow</Navbar.Brand>
+          </Col>
 
+          {/* Search Bar */}
+          <Col xs={12} md={4} className="mb-2 mb-md-0">
+            <Form
+              onSubmit={handleSubmit}
+              className="w-100"
+              style={{ maxWidth: "600px" }}
+            >
+              <InputGroup>
+                <InputGroup.Text className="bg-light border-0 rounded-start-pill">
+                  <i className="bi bi-search text-secondary" />
+                </InputGroup.Text>
+                <Form.Control
+                  type="text"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Search for songs or artists..."
+                  className="border-0 rounded-end-pill px-3"
+                  style={{ fontSize: "1rem", boxShadow: "none" }}
+                />
+              </InputGroup>
+            </Form>
+          </Col>
+
+          {/* Auth Buttons */}
+          <Col
+            xs={12}
+            md={4}
+            className="d-flex justify-content-center justify-content-md-end"
+          >
+            {!user ? (
+              <>
+                <Button
+                  variant="outline-light"
+                  className="rounded-pill px-4 mx-1"
+                  onClick={handleLogin}
+                >
+                  Login
+                </Button>
+                <Button
+                  variant="light"
+                  className="rounded-pill px-4 mx-1"
+                  onClick={handleSignup}
+                >
+                  Sign Up
+                </Button>
+              </>
+            ) : (
               <Button
                 variant="outline-light"
-                className="rounded-pill px-4 mx-2"
-                onClick={handleSignup}
+                className="rounded-pill px-4 mx-1"
+                onClick={handleLogout}
               >
-                Sign Up
+                Logout
               </Button>
-            </>
-          ) : (
-            <Button
-              variant="outline-light"
-              className="rounded-pill px-4 mx-2"
-              onClick={handleLogout}
-            >
-              Logout
-            </Button>
-          )}
-        </div>
+            )}
+          </Col>
+        </Row>
       </Container>
     </Navbar>
   );

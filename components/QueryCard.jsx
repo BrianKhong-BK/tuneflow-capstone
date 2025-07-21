@@ -2,7 +2,6 @@ import { useEffect, useState, useContext, useRef } from "react";
 import {
   Card,
   Col,
-  Row,
   Image,
   Container,
   Button,
@@ -14,6 +13,7 @@ import { AuthContext } from "../contexts/AuthContext";
 
 export default function QueryCard({
   query,
+  querySize,
   setNowPlaying,
   setSongCover,
   setSongs,
@@ -26,9 +26,10 @@ export default function QueryCard({
   const [selectedPlaylistId, setSelectedPlaylistId] = useState(null);
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);
-  const [loading, setLoading] = useState(false); // prevent double loading
+  const [loading, setLoading] = useState(false);
   const scrollRef = useRef(null);
 
+  //Search on spotify API
   useEffect(() => {
     setSearchResults([]);
     setOffset(0);
@@ -54,6 +55,7 @@ export default function QueryCard({
     if (query) initialLoad();
   }, [query]);
 
+  //Detects if scroll page reach the bottom
   useEffect(() => {
     const handleScroll = () => {
       const el = scrollRef.current;
@@ -61,7 +63,7 @@ export default function QueryCard({
 
       const { scrollTop, scrollHeight, clientHeight } = el;
       if (scrollTop + clientHeight >= scrollHeight - 100) {
-        loadNextPage(); // call only on scroll
+        loadNextPage();
       }
     };
 
@@ -73,6 +75,7 @@ export default function QueryCard({
     };
   }, [hasMore, loading]);
 
+  //Load next page
   async function loadNextPage() {
     if (loading || !hasMore) return;
 
@@ -91,6 +94,7 @@ export default function QueryCard({
     }
   }
 
+  //Add song to playlist call out modal
   async function addSong(track) {
     try {
       const res = await axios.get("http://localhost:3000/api/playlists", {
@@ -106,6 +110,7 @@ export default function QueryCard({
     }
   }
 
+  //Confirm add song to playlist
   async function handleConfirmAdd() {
     if (!selectedPlaylistId || !selectedTrack) return;
 
@@ -132,6 +137,7 @@ export default function QueryCard({
     }
   }
 
+  //Tracklist group
   const TrackList = () => {
     if (!searchResults.length) {
       return (
@@ -140,8 +146,9 @@ export default function QueryCard({
     }
 
     return (
-      <div className="d-flex flex-column gap-3">
+      <div className="d-flex flex-column gap-2">
         {searchResults.map((result, index) => {
+          //Play songs
           function playSong() {
             setNowPlaying(`${result.title} : ${result.artist}`);
             setSongCover(result.cover);
@@ -151,11 +158,24 @@ export default function QueryCard({
           return (
             <div
               key={index}
-              className="d-flex align-items-center px-3 py-2 rounded hover-bg-dark border-bottom border-secondary"
-              style={{ cursor: "pointer", transition: "background 0.2s" }}
+              className="track-item d-flex align-items-center px-3 py-2 rounded track-hover"
             >
-              <div className="text-white me-3" style={{ width: "30px" }}>
-                {index + 1}
+              <div
+                className="track-index me-3 d-flex align-items-center justify-content-center"
+                style={{ width: "30px" }}
+              >
+                {/* Index */}
+                <span className="index-number text-white">{index + 1}</span>
+
+                {/* Play button */}
+                <i
+                  className="bi bi-play-fill index-play icon-dark"
+                  style={{ cursor: "pointer" }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    playSong();
+                  }}
+                ></i>
               </div>
 
               <Image
@@ -170,30 +190,27 @@ export default function QueryCard({
                 }}
               />
 
+              {/* Song info */}
               <div className="flex-grow-1">
                 <div className="fw-semibold text-white">{result.title}</div>
                 <div className="text-white-50 small">{result.artist}</div>
               </div>
 
-              <div className="d-flex gap-2">
+              <div className="track-actions d-flex gap-4">
+                {/* Add songs to playlist button */}
                 {user && (
-                  <Button
-                    variant="outline-light"
-                    size="sm"
-                    className="rounded-pill px-3"
-                    onClick={() => addSong(result)}
-                  >
-                    <i className="bi bi-download"></i>
-                  </Button>
+                  <i
+                    className="bi bi-plus-circle icon-dark add-btn"
+                    style={{ cursor: "pointer" }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      addSong(result);
+                    }}
+                  ></i>
                 )}
-                <Button
-                  variant="outline-light"
-                  size="sm"
-                  className="rounded-pill px-3"
-                  onClick={playSong}
-                >
-                  <i className="bi bi-play-fill"></i>
-                </Button>
+
+                {/* Duration */}
+                <div className="fw-semibold text-white">{result.duration}</div>
               </div>
             </div>
           );
@@ -204,14 +221,11 @@ export default function QueryCard({
 
   return (
     <>
-      <Col md={9}>
+      <Col md={querySize}>
         <Card
           className="bg-card-dark text-white shadow rounded-3"
           style={{ height: "80vh" }}
         >
-          <Card.Header className="border-bottom border-secondary">
-            <h5 className="mb-0">Search Results</h5>
-          </Card.Header>
           <Card.Body style={{ overflowY: "auto" }} ref={scrollRef}>
             <Container fluid>
               <TrackList />
