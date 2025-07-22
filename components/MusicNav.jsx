@@ -224,10 +224,31 @@ export default function MusicNav({
 
   const { playing, volume, muted, loop, played, duration } = state;
 
+  useEffect(() => {
+    const percentage = played * 100;
+    const slider = document.querySelector(".progress-range");
+    if (slider) {
+      slider.style.background = `linear-gradient(to right, #0d6efd 0%, #0d6efd ${percentage}%, #ffffff ${percentage}%, #ffffff 100%)`;
+    }
+  }, [played]);
+
   return (
-    <Navbar bg="black" variant="dark">
+    <div>
       <Container fluid>
-        <Row className="w-100 align-items-center">
+        <Form.Range
+          className="progress-range"
+          value={played}
+          min={0}
+          max={0.999999}
+          step="any"
+          onMouseDown={handleSeekMouseDown}
+          onChange={handleSeekChange}
+          onMouseUp={handleSeekMouseUp}
+        />
+      </Container>
+
+      <Container fluid className="pt-2">
+        <Row className="align-items-center">
           {songId && (
             <div
               style={{
@@ -253,14 +274,14 @@ export default function MusicNav({
               />
             </div>
           )}
-          <Col md={4}>
+          <Col xs={12} md={4}>
             {currentSongInfo.cover && (
               <div className="d-flex align-items-center">
                 <Image
                   src={currentSongInfo.cover}
                   rounded
                   className="me-3"
-                  style={{ width: "56px", height: "56px", objectFit: "cover" }}
+                  style={{ width: "40px", height: "40px", objectFit: "cover" }}
                 />
                 <div className="song-info">
                   <div className="title">{currentSongInfo.title}</div>
@@ -271,13 +292,19 @@ export default function MusicNav({
           </Col>
 
           {/* Center: Controls + Progress */}
-          <Col md={4}>
+          <Col xs={12} md={4}>
             <div className="d-flex align-items-center justify-content-center gap-3 play-controls">
-              <Button onClick={handlePrevious}>
+              <Button
+                onClick={handlePrevious}
+                disabled={!nowPlaying ? true : false}
+              >
                 <i className="bi bi-skip-start-fill" />
               </Button>
 
-              <Button onClick={playing ? handlePause : handlePlay}>
+              <Button
+                onClick={playing ? handlePause : handlePlay}
+                disabled={!nowPlaying ? true : false}
+              >
                 {playing ? (
                   <i className="bi bi-pause-fill" />
                 ) : (
@@ -285,20 +312,13 @@ export default function MusicNav({
                 )}
               </Button>
 
-              <Button onClick={handleNext}>
+              <Button
+                onClick={handleNext}
+                disabled={!nowPlaying ? true : false}
+              >
                 <i className="bi bi-skip-end-fill" />
               </Button>
 
-              <Form.Range
-                className="progress-range"
-                value={played}
-                min={0}
-                max={0.999999}
-                step="any"
-                onMouseDown={handleSeekMouseDown}
-                onChange={handleSeekChange}
-                onMouseUp={handleSeekMouseUp}
-              />
               {duration !== 0 && (
                 <div className="time-display">
                   {convertDuration(parseInt(played * duration))}/
@@ -309,34 +329,33 @@ export default function MusicNav({
           </Col>
 
           {/* Right: Volume & Loop */}
-          <Col
-            md={4}
-            className="d-flex align-items-center justify-content-end gap-3 volume-controls"
-          >
-            <div className="repeat-toggle" onClick={handleToggleLoop}>
-              <i className="bi bi-repeat me-1" />
-              {loop ? "LOOP" : "NO LOOP"}
+          <Col xs={12} md={4}>
+            <div className="d-flex align-items-center justify-content-end gap-3 volume-controls">
+              <div className="repeat-toggle " onClick={handleToggleLoop}>
+                <i className="bi bi-repeat me-1" />
+                {loop ? "LOOP" : "NO LOOP"}
+              </div>
+              <div onClick={handleToggleMuted}>
+                {volume === 0 ? (
+                  <i className="bi bi-volume-mute-fill" />
+                ) : volume < 0.5 ? (
+                  <i className="bi bi-volume-down-fill" />
+                ) : (
+                  <i className="bi bi-volume-up-fill" />
+                )}
+              </div>
+              <Form.Range
+                value={volume}
+                min={0}
+                max={1}
+                step="any"
+                style={{ width: "100px" }}
+                onChange={handleVolumeChange}
+              />
             </div>
-            <div onClick={handleToggleMuted}>
-              {volume === 0 ? (
-                <i className="bi bi-volume-mute-fill" />
-              ) : volume < 0.5 ? (
-                <i className="bi bi-volume-down-fill" />
-              ) : (
-                <i className="bi bi-volume-up-fill" />
-              )}
-            </div>
-            <Form.Range
-              value={volume}
-              min={0}
-              max={1}
-              step="any"
-              style={{ width: "100px" }}
-              onChange={handleVolumeChange}
-            />
           </Col>
         </Row>
       </Container>
-    </Navbar>
+    </div>
   );
 }

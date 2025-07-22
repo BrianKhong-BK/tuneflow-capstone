@@ -119,8 +119,45 @@ html {
 
 /* Progress Bar */
 .progress-range {
-  flex-grow: 1;
-  max-width: 300px;
+  width: 100%;
+  height: 6px;
+  border-radius: 5px;
+  appearance: none;
+  background: linear-gradient(to right, #0d6efd 0%, #ffffff 0%);
+}
+
+/* For Chrome / Edge / Safari */
+.progress-range::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 5px;
+  background: transparent;
+}
+
+.progress-range::-webkit-slider-thumb {
+  appearance: none;
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  background: white;
+  border: 2px solid #0d6efd;
+  margin-top: -5px;
+  cursor: pointer;
+}
+
+/* For Firefox */
+.progress-range::-moz-range-track {
+  height: 6px;
+  border-radius: 5px;
+  background: transparent;
+}
+
+.progress-range::-moz-range-thumb {
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  background: white;
+  border: 2px solid #0d6efd;
+  cursor: pointer;
 }
 
 /* Time display */
