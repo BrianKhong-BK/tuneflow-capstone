@@ -101,7 +101,7 @@ export default function PlaylistCard({ setSelectedPlaylistId }) {
         className="bg-card-dark text-white shadow rounded-3"
         style={{ height: "80vh" }}
       >
-        <Card.Header className="border-bottom border-secondary d-flex justify-content-between align-items-center">
+        <Card.Header className="d-flex justify-content-between align-items-center">
           <h5 className="mb-0">Your Playlists</h5>
           <Button
             variant="outline-light"
@@ -117,48 +117,37 @@ export default function PlaylistCard({ setSelectedPlaylistId }) {
             <p className="text-muted">No playlists yet.</p>
           ) : (
             playlists.map((playlist) => (
-              <Card
+              <div
                 key={playlist.id}
-                bg="dark"
-                text="light"
-                className="mb-3 border border-secondary"
+                className=" track-item d-flex align-items-center gap-3 p-2 mb-2 rounded cursor-pointer track-hover"
+                onClick={() => setSelectedPlaylistId(playlist.id)}
+                role="button"
               >
-                <Card.Body>
-                  <Card.Title className="mb-1">{playlist.name}</Card.Title>
-
-                  {playlist.description && (
-                    <Card.Text
-                      className="text-muted mb-2"
-                      style={{ fontSize: "0.9rem" }}
-                    >
-                      {playlist.description}
-                    </Card.Text>
-                  )}
-
-                  <div className="d-flex justify-content-between align-items-center">
-                    <Badge bg={playlist.is_public ? "success" : "secondary"}>
-                      {playlist.is_public ? "Public" : "Private"}
-                    </Badge>
-
-                    <div className="d-flex gap-2">
-                      <Button
-                        variant="outline-danger"
-                        size="sm"
-                        onClick={() => confirmDelete(playlist)}
-                      >
-                        Delete
-                      </Button>
-                      <Button
-                        variant="outline-light"
-                        size="sm"
-                        onClick={() => setSelectedPlaylistId(playlist.id)}
-                      >
-                        Open Playlist
-                      </Button>
+                {/* Thumbnail */}
+                {playlist.images.length >= 4 ? (
+                  <div className="square-grid-sm">
+                    <div className="square-grid-inner">
+                      {playlist.images.slice(0, 4).map((img, index) => (
+                        <img key={index} src={img} alt={`img-${index}`} />
+                      ))}
                     </div>
                   </div>
-                </Card.Body>
-              </Card>
+                ) : (
+                  <img
+                    src={playlist.images[0]}
+                    alt="playlist-cover"
+                    className="single-image-sm"
+                  />
+                )}
+
+                {/* Playlist Info */}
+                <div className="flex-grow-1">
+                  <div className="fw-semibold">{playlist.name}</div>
+                  <div className="text-white-50 small">
+                    Playlist • {playlist.is_public ? "Public" : "Private"}
+                  </div>
+                </div>
+              </div>
             ))
           )}
         </Card.Body>

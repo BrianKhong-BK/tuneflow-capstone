@@ -16,7 +16,7 @@ export default function QueryCard({
   querySize,
   setNowPlaying,
   setSongCover,
-  setSongs,
+  setPlayPlaylist,
 }) {
   const { user, token } = useContext(AuthContext);
   const [searchResults, setSearchResults] = useState([]);
@@ -152,7 +152,7 @@ export default function QueryCard({
           function playSong() {
             setNowPlaying(`${result.title} : ${result.artist}`);
             setSongCover(result.cover);
-            setSongs([]);
+            setPlayPlaylist([]);
           }
 
           return (

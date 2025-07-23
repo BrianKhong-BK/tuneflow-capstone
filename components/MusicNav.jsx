@@ -15,7 +15,7 @@ export default function MusicNav({
   nowPlaying,
   songCover,
   setSongCover,
-  songs,
+  playPlaylist,
   currentIndex,
   setCurrentIndex,
   setNowPlaying,
@@ -47,6 +47,7 @@ export default function MusicNav({
   });
   const [state, setState] = useState(initialState);
   const [lastVolume, setLastVolume] = useState(0);
+  const [lastSong, setLastSong] = useState(false);
   const playerRef = useRef();
 
   //Get songs info from youtube-music-api
@@ -107,7 +108,19 @@ export default function MusicNav({
 
   //Play songs
   const handlePlay = () => {
-    setState((prevState) => ({ ...prevState, playing: true }));
+    if (playPlaylist.length > 0) {
+      if (currentIndex + 1 >= playPlaylist.length && lastSong) {
+        setCurrentIndex(0);
+        const firstSong = playPlaylist[0];
+        setNowPlaying(`${firstSong.title} : ${firstSong.artist}`);
+        setSongCover(firstSong.thumbnail);
+        setLastSong(false);
+      } else {
+        setState((prevState) => ({ ...prevState, playing: true }));
+      }
+    } else {
+      setState((prevState) => ({ ...prevState, playing: true }));
+    }
   };
 
   //Change volume
@@ -142,13 +155,20 @@ export default function MusicNav({
 
   //Handle event after player ended
   const handleEnded = () => {
-    if (currentIndex + 1 < songs.length) {
+    if (playPlaylist.length > 0 && !state.loop) {
       setState((prevState) => ({ ...prevState, playing: false }));
-      const nextIndex = (currentIndex + 1) % songs.length;
-      setCurrentIndex(nextIndex);
-      const nextSong = songs[nextIndex];
-      setNowPlaying(`${nextSong.title} : ${nextSong.artist}`);
-      setSongCover(nextSong.thumbnail);
+      const isLastSong = currentIndex + 1 >= playPlaylist.length;
+      if (isLastSong) {
+        setLastSong(true);
+        setState((prevState) => ({ ...prevState, playing: false }));
+      } else {
+        const nextIndex = currentIndex + 1;
+        setCurrentIndex(nextIndex);
+        const nextSong = playPlaylist[nextIndex];
+        setNowPlaying(`${nextSong.title} : ${nextSong.artist}`);
+        setSongCover(nextSong.thumbnail);
+        setState((prevState) => ({ ...prevState, playing: false }));
+      }
     } else {
       setState((prevState) => ({ ...prevState, playing: false }));
     }
@@ -204,33 +224,43 @@ export default function MusicNav({
 
   //Play next song in playlist
   const handleNext = () => {
-    if (songs.length === 0) return;
-    const nextIndex = (currentIndex + 1) % songs.length;
+    if (playPlaylist.length === 0) return;
+    const nextIndex = (currentIndex + 1) % playPlaylist.length;
     setCurrentIndex(nextIndex);
-    const nextSong = songs[nextIndex];
+    const nextSong = playPlaylist[nextIndex];
     setNowPlaying(`${nextSong.title} : ${nextSong.artist}`);
     setSongCover(nextSong.thumbnail);
   };
 
   //Play previous song in playlist
   const handlePrevious = () => {
-    if (songs.length === 0) return;
-    const prevIndex = (currentIndex - 1 + songs.length) % songs.length;
+    if (playPlaylist.length === 0) return;
+    const prevIndex =
+      (currentIndex - 1 + playPlaylist.length) % playPlaylist.length;
     setCurrentIndex(prevIndex);
-    const prevSong = songs[prevIndex];
+    const prevSong = playPlaylist[prevIndex];
     setNowPlaying(`${prevSong.title} : ${prevSong.artist}`);
     setSongCover(prevSong.thumbnail);
   };
 
   const { playing, volume, muted, loop, played, duration } = state;
 
+  //Update progress bar style
   useEffect(() => {
     const percentage = played * 100;
     const slider = document.querySelector(".progress-range");
     if (slider) {
-      slider.style.background = `linear-gradient(to right, #0d6efd 0%, #0d6efd ${percentage}%, #ffffff ${percentage}%, #ffffff 100%)`;
+      slider.style.background = `linear-gradient(to right, #FF6B00 0%, #FF6B00 ${percentage}%, #ffffff ${percentage}%, #ffffff 100%)`;
     }
   }, [played]);
+
+  useEffect(() => {
+    const percentage = volume * 100;
+    const slider = document.querySelector(".volume-range");
+    if (slider) {
+      slider.style.background = `linear-gradient(to right, #FF6B00 0%, #FF6B00 ${percentage}%, #ffffff ${percentage}%, #ffffff 100%)`;
+    }
+  }, [volume]);
 
   return (
     <div>
@@ -332,8 +362,10 @@ export default function MusicNav({
           <Col xs={12} md={4}>
             <div className="d-flex align-items-center justify-content-end gap-3 volume-controls">
               <div className="repeat-toggle " onClick={handleToggleLoop}>
-                <i className="bi bi-repeat me-1" />
-                {loop ? "LOOP" : "NO LOOP"}
+                <i
+                  className="bi bi-repeat me-1"
+                  style={loop ? { color: "#FF6B00" } : { color: "white" }}
+                />
               </div>
               <div onClick={handleToggleMuted}>
                 {volume === 0 ? (
@@ -345,6 +377,7 @@ export default function MusicNav({
                 )}
               </div>
               <Form.Range
+                className="volume-range"
                 value={volume}
                 min={0}
                 max={1}

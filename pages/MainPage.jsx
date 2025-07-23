@@ -13,7 +13,7 @@ export default function MainPage() {
   const [nowPlaying, setNowPlaying] = useState(null);
   const [songCover, setSongCover] = useState("");
   const [selectedPlaylistId, setSelectedPlaylistId] = useState("");
-  const [songs, setSongs] = useState([]);
+  const [playPlaylist, setPlayPlaylist] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [querySize, setQuerySize] = useState(0);
 
@@ -40,8 +40,8 @@ export default function MainPage() {
             selectedPlaylistId={selectedPlaylistId}
             setNowPlaying={setNowPlaying}
             setSongCover={setSongCover}
-            songs={songs}
-            setSongs={setSongs}
+            playPlaylist={playPlaylist}
+            setPlayPlaylist={setPlayPlaylist}
             currentIndex={currentIndex}
             setCurrentIndex={setCurrentIndex}
           />
@@ -51,7 +51,7 @@ export default function MainPage() {
             querySize={querySize}
             setNowPlaying={setNowPlaying}
             setSongCover={setSongCover}
-            setSongs={setSongs}
+            setPlayPlaylist={setPlayPlaylist}
           />
         )}
         <MusicNav
@@ -59,8 +59,7 @@ export default function MainPage() {
           setNowPlaying={setNowPlaying}
           songCover={songCover}
           setSongCover={setSongCover}
-          songs={songs}
-          setSongs={setSongs}
+          playPlaylist={playPlaylist}
           currentIndex={currentIndex}
           setCurrentIndex={setCurrentIndex}
         />
