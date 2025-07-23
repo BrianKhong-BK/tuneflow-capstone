@@ -13,7 +13,6 @@ import { AuthContext } from "../contexts/AuthContext";
 
 export default function PlaylistSongCard({
   selectedPlaylistId,
-  playPlaylist,
   setPlayPlaylist,
   setNowPlaying,
   setSongCover,
@@ -54,7 +53,7 @@ export default function PlaylistSongCard({
   const handlePlayAll = () => {
     if (songs.length > 0) {
       setPlayPlaylist(songs);
-      const current = playPlaylist[0];
+      const current = songs[0]; // use songs, not playPlaylist
       setCurrentIndex(0);
       setNowPlaying(`${current.title} : ${current.artist}`);
       setSongCover(current.thumbnail);
@@ -77,8 +76,9 @@ export default function PlaylistSongCard({
         }
       );
 
-      setSongs((prev) => prev.filter((s) => s.id !== selectedSong.id));
-      setPlayPlaylist(songs);
+      const updatedSongs = songs.filter((s) => s.id !== selectedSong.id);
+      setSongs(updatedSongs);
+      setPlayPlaylist(updatedSongs);
       setShowModal(false);
       setSelectedSong(null);
     } catch (error) {
@@ -154,11 +154,11 @@ export default function PlaylistSongCard({
                 <div className="text-white-50 small">{song.artist}</div>
               </div>
 
-              <div className="track-action d-flex remove-song-btn">
+              <div className="track-actions d-flex">
                 <Button
                   variant="outline-danger"
                   size="sm"
-                  className="rounded-pill px-3"
+                  className="rounded-pill px-3 remove-btn"
                   onClick={() => handleRemove(song)}
                 >
                   <i className="bi bi-x"></i>

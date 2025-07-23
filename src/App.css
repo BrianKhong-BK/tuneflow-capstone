@@ -44,12 +44,14 @@ html {
   background-color: rgba(255, 255, 255, 0.05); /* slightly lighter */
 }
 
-.track-actions .add-btn {
+.track-actions .add-btn,
+.track-actions .remove-btn {
   opacity: 0;
   transition: opacity 0.2s ease;
 }
 
-.track-item:hover .add-btn {
+.track-item:hover .add-btn,
+.track-item:hover .remove-btn {
   opacity: 1;
 }
 
