@@ -13,13 +13,18 @@ import { AuthContext } from "../contexts/AuthContext";
 
 export default function PlaylistCard({ setSelectedPlaylistId }) {
   const { token } = useContext(AuthContext);
-  const [showModal, setShowModal] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
   const [playlistName, setPlaylistName] = useState("");
   const [playlistDescription, setPlaylistDescription] = useState("");
   const [isPublic, setIsPublic] = useState(false);
   const [playlists, setPlaylists] = useState([]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [playlistToDelete, setPlaylistToDelete] = useState(null);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingPlaylist, setEditingPlaylist] = useState(null);
+  const [editName, setEditName] = useState("");
+  const [editDescription, setEditDescription] = useState("");
+  const [editIsPublic, setEditIsPublic] = useState(false);
 
   useEffect(() => {
     if (token) {
@@ -59,7 +64,7 @@ export default function PlaylistCard({ setSelectedPlaylistId }) {
         }
       );
 
-      setShowModal(false);
+      setShowCreateModal(false);
       setPlaylistName("");
       setPlaylistDescription("");
       setIsPublic(false);
@@ -69,12 +74,35 @@ export default function PlaylistCard({ setSelectedPlaylistId }) {
     }
   };
 
-  const confirmDelete = (playlist) => {
+  const handleEdit = async () => {
+    try {
+      await axios.put(
+        `http://localhost:3000/api/playlists/${editingPlaylist.id}`,
+        {
+          name: editName,
+          description: editDescription,
+          is_public: editIsPublic,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setShowEditModal(false);
+      setEditingPlaylist(null);
+      fetchPlaylists();
+    } catch (err) {
+      console.error("Error updating playlist:", err);
+    }
+  };
+
+  const handleDelete = (playlist) => {
     setPlaylistToDelete(playlist);
     setShowDeleteModal(true);
   };
 
-  const handleDelete = async () => {
+  const confirmDelete = async () => {
     if (!playlistToDelete) return;
 
     try {
@@ -90,6 +118,7 @@ export default function PlaylistCard({ setSelectedPlaylistId }) {
       fetchPlaylists();
       setShowDeleteModal(false);
       setPlaylistToDelete(null);
+      setSelectedPlaylistId("");
     } catch (err) {
       console.error(err);
     }
@@ -106,7 +135,7 @@ export default function PlaylistCard({ setSelectedPlaylistId }) {
           <Button
             variant="outline-light"
             size="sm"
-            onClick={() => setShowModal(true)}
+            onClick={() => setShowCreateModal(true)}
           >
             + Create
           </Button>
@@ -147,6 +176,33 @@ export default function PlaylistCard({ setSelectedPlaylistId }) {
                     Playlist • {playlist.is_public ? "Public" : "Private"}
                   </div>
                 </div>
+
+                <div className="track-actions d-flex gap-2">
+                  <Button
+                    variant="outline-secondary"
+                    size="sm"
+                    className="rounded-circle edit-btn"
+                    onClick={(e) => {
+                      e.stopPropagation(); // prevent triggering playlist selection
+                      setEditingPlaylist(playlist);
+                      setEditName(playlist.name);
+                      setEditDescription(playlist.description);
+                      setEditIsPublic(playlist.is_public);
+                      setShowEditModal(true);
+                      console.log(editingPlaylist);
+                    }}
+                  >
+                    <i className="bi bi-pencil-fill"></i>
+                  </Button>
+                  <Button
+                    variant="outline-danger"
+                    size="sm"
+                    className="rounded-circle remove-btn"
+                    onClick={() => handleDelete(playlist)}
+                  >
+                    <i className="bi bi-trash-fill"></i>
+                  </Button>
+                </div>
               </div>
             ))
           )}
@@ -154,7 +210,11 @@ export default function PlaylistCard({ setSelectedPlaylistId }) {
       </Card>
 
       {/* Modal */}
-      <Modal show={showModal} onHide={() => setShowModal(false)} centered>
+      <Modal
+        show={showCreateModal}
+        onHide={() => setShowCreateModal(false)}
+        centered
+      >
         <Modal.Header closeButton>
           <Modal.Title>Create New Playlist</Modal.Title>
         </Modal.Header>
@@ -197,7 +257,7 @@ export default function PlaylistCard({ setSelectedPlaylistId }) {
         </Modal.Body>
 
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowModal(false)}>
+          <Button variant="secondary" onClick={() => setShowCreateModal(false)}>
             Cancel
           </Button>
           <Button
@@ -230,8 +290,64 @@ export default function PlaylistCard({ setSelectedPlaylistId }) {
           <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
             Cancel
           </Button>
-          <Button variant="danger" onClick={handleDelete}>
+          <Button variant="danger" onClick={confirmDelete}>
             Delete
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal
+        show={showEditModal}
+        onHide={() => setShowEditModal(false)}
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Edit Playlist</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group controlId="editPlaylistName">
+              <Form.Label>Name</Form.Label>
+              <Form.Control
+                type="text"
+                value={editName}
+                onChange={(e) => setEditName(e.target.value)}
+              />
+            </Form.Group>
+
+            <Form.Group controlId="editPlaylistDescription" className="mt-3">
+              <Form.Label>Description</Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={3}
+                value={editDescription}
+                onChange={(e) => setEditDescription(e.target.value)}
+              />
+            </Form.Group>
+
+            <Form.Group
+              controlId="editIsPublic"
+              className="mt-4 d-flex align-items-center justify-content-between"
+            >
+              <Form.Label className="mb-0">Make playlist public</Form.Label>
+              <Form.Check
+                type="switch"
+                checked={editIsPublic}
+                onChange={(e) => setEditIsPublic(e.target.checked)}
+              />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowEditModal(false)}>
+            Cancel
+          </Button>
+          <Button
+            variant="primary"
+            onClick={handleEdit}
+            disabled={!editName.trim()}
+          >
+            Save Changes
           </Button>
         </Modal.Footer>
       </Modal>

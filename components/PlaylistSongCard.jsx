@@ -158,7 +158,7 @@ export default function PlaylistSongCard({
                 <Button
                   variant="outline-danger"
                   size="sm"
-                  className="rounded-pill px-3 remove-btn"
+                  className="rounded-circle remove-btn"
                   onClick={() => handleRemove(song)}
                 >
                   <i className="bi bi-x"></i>

@@ -45,13 +45,15 @@ html {
 }
 
 .track-actions .add-btn,
-.track-actions .remove-btn {
+.track-actions .remove-btn,
+.track-actions .edit-btn {
   opacity: 0;
   transition: opacity 0.2s ease;
 }
 
 .track-item:hover .add-btn,
-.track-item:hover .remove-btn {
+.track-item:hover .remove-btn,
+.track-item:hover .edit-btn {
   opacity: 1;
 }
 
