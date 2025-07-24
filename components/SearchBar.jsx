@@ -13,19 +13,19 @@ import {
 } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
+import { AppStateContext } from "../contexts/AppStateContext";
 
-export default function SearchBar({ setQuery, setSelectedPlaylistId }) {
+export default function SearchBar() {
   const navigate = useNavigate();
   const { user, setLoading } = useContext(AuthContext);
+  const { setSelectedPlaylistId } = useContext(AppStateContext);
   const [search, setSearch] = useState("");
   const [showSearch, setShowSearch] = useState(false);
   const [showAuthMenu, setShowAuthMenu] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (search.trim()) {
-      setQuery(search.trim());
-    }
+    navigate(`/search/${search}`);
     setSelectedPlaylistId("");
   };
 

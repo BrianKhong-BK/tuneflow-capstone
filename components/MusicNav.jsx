@@ -1,25 +1,10 @@
 import ReactPlayer from "react-player";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useContext } from "react";
+import { AppStateContext } from "../contexts/AppStateContext";
 import axios from "axios";
-import {
-  Navbar,
-  Container,
-  Button,
-  Form,
-  Row,
-  Col,
-  Image,
-} from "react-bootstrap";
+import { Container, Button, Form, Row, Col, Image } from "react-bootstrap";
 
-export default function MusicNav({
-  nowPlaying,
-  songCover,
-  setSongCover,
-  playPlaylist,
-  currentIndex,
-  setCurrentIndex,
-  setNowPlaying,
-}) {
+export default function MusicNav() {
   //Initial state for react-player
   const initialState = {
     src: undefined,
@@ -39,6 +24,15 @@ export default function MusicNav({
     playedSeconds: 0,
   };
 
+  const {
+    nowPlaying,
+    songCover,
+    setSongCover,
+    playPlaylist,
+    currentIndex,
+    setCurrentIndex,
+    setNowPlaying,
+  } = useContext(AppStateContext);
   const [songId, setSongId] = useState(null);
   const [currentSongInfo, setCurrentSongInfo] = useState({
     cover: "",
@@ -263,7 +257,14 @@ export default function MusicNav({
   }, [volume]);
 
   return (
-    <div>
+    <div
+      className="bg-dark text-white p-2"
+      style={{
+        borderTop: "1px solid #444",
+        position: "relative", // not fixed!
+        zIndex: 10,
+      }}
+    >
       <Container fluid>
         <Form.Range
           className="progress-range d-none d-md-block"
