@@ -278,7 +278,7 @@ export default function MusicNav() {
         />
       </Container>
 
-      <Container fluid className="pt-4">
+      <Container fluid className="pt-3">
         <Row className="align-items-center">
           {songId && (
             <div

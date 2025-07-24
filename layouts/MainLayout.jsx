@@ -1,5 +1,6 @@
 import SearchBar from "../components/SearchBar";
 import MusicNav from "../components/MusicNav";
+import Sidebar from "../components/SideBar";
 import { AppStateContext } from "../contexts/AppStateContext";
 import { useContext } from "react";
 import { Outlet } from "react-router-dom";
@@ -20,11 +21,28 @@ export default function MainLayout() {
         <SearchBar />
       </div>
 
-      {/* Scrollable Content */}
+      <div style={{ flexShrink: 0 }}>
+        <Sidebar />
+      </div>
+
+      {/* Scrollable Content - On Small Screen */}
       <div
+        className="d-md-none"
         style={{
           flexGrow: 1,
           overflowY: "auto",
+        }}
+      >
+        <Outlet />
+      </div>
+
+      {/* Scrollable Content - On Large Screen */}
+      <div
+        className="d-none d-md-block"
+        style={{
+          flexGrow: 1,
+          overflowY: "auto",
+          marginLeft: "200px",
         }}
       >
         <Outlet />
