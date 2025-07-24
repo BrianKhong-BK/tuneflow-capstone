@@ -54,15 +54,17 @@ export default function MainPage() {
             setPlayPlaylist={setPlayPlaylist}
           />
         )}
-        <MusicNav
-          nowPlaying={nowPlaying}
-          setNowPlaying={setNowPlaying}
-          songCover={songCover}
-          setSongCover={setSongCover}
-          playPlaylist={playPlaylist}
-          currentIndex={currentIndex}
-          setCurrentIndex={setCurrentIndex}
-        />
+        {nowPlaying && (
+          <MusicNav
+            nowPlaying={nowPlaying}
+            setNowPlaying={setNowPlaying}
+            songCover={songCover}
+            setSongCover={setSongCover}
+            playPlaylist={playPlaylist}
+            currentIndex={currentIndex}
+            setCurrentIndex={setCurrentIndex}
+          />
+        )}
       </Row>
     </div>
   );

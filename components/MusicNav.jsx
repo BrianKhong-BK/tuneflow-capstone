@@ -266,7 +266,7 @@ export default function MusicNav({
     <div>
       <Container fluid>
         <Form.Range
-          className="progress-range"
+          className="progress-range d-none d-md-block"
           value={played}
           min={0}
           max={0.999999}
@@ -277,7 +277,7 @@ export default function MusicNav({
         />
       </Container>
 
-      <Container fluid className="pt-2">
+      <Container fluid className="pt-4">
         <Row className="align-items-center">
           {songId && (
             <div
@@ -304,7 +304,7 @@ export default function MusicNav({
               />
             </div>
           )}
-          <Col xs={12} md={4}>
+          <Col xs={9} md={4}>
             {currentSongInfo.cover && (
               <div className="d-flex align-items-center">
                 <Image
@@ -322,7 +322,30 @@ export default function MusicNav({
           </Col>
 
           {/* Center: Controls + Progress */}
-          <Col xs={12} md={4}>
+          <Col xs={3} md={4} className="d-md-none">
+            <div className="d-flex align-items-center justify-content-center gap-1 play-controls">
+              <Button
+                onClick={playing ? handlePause : handlePlay}
+                disabled={!nowPlaying ? true : false}
+              >
+                {playing ? (
+                  <i className="bi bi-pause-fill" />
+                ) : (
+                  <i className="bi bi-play-fill" />
+                )}
+              </Button>
+
+              <Button
+                onClick={handleNext}
+                disabled={!nowPlaying ? true : false}
+              >
+                <i className="bi bi-skip-end-fill" />
+              </Button>
+            </div>
+          </Col>
+
+          {/* Center: Controls + Progress */}
+          <Col xs={12} md={4} className="d-none d-md-block">
             <div className="d-flex align-items-center justify-content-center gap-3 play-controls">
               <Button
                 onClick={handlePrevious}
@@ -359,7 +382,7 @@ export default function MusicNav({
           </Col>
 
           {/* Right: Volume & Loop */}
-          <Col xs={12} md={4}>
+          <Col xs={12} md={4} className="d-none d-md-block">
             <div className="d-flex align-items-center justify-content-end gap-3 volume-controls">
               <div className="repeat-toggle " onClick={handleToggleLoop}>
                 <i

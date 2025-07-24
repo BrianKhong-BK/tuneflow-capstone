@@ -224,7 +224,7 @@ export default function QueryCard({
       <Col md={querySize}>
         <Card
           className="bg-card-dark text-white shadow rounded-3"
-          style={{ height: "80vh" }}
+          style={{ height: "calc(100vh - 190px)" }}
         >
           <Card.Body style={{ overflowY: "auto" }} ref={scrollRef}>
             <Container fluid>
