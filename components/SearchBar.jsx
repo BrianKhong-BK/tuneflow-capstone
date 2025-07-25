@@ -2,6 +2,7 @@ import { auth } from "../firebase";
 import { signOut } from "firebase/auth";
 import { useState, useContext } from "react";
 import {
+  Nav,
   Navbar,
   Container,
   Button,
@@ -152,33 +153,54 @@ export default function SearchBar() {
         show={showAuthMenu}
         onHide={() => setShowAuthMenu(false)}
         placement="end"
-        className="bg-card-dark text-white"
+        className="bg-dark text-white"
         backdrop
       >
         <Offcanvas.Header closeVariant="white" closeButton>
-          <Offcanvas.Title>Menu</Offcanvas.Title>
+          <Offcanvas.Title className="fw-bold">Menu</Offcanvas.Title>
         </Offcanvas.Header>
+
         <Offcanvas.Body>
+          {/* Navigation */}
+          <Nav className="flex-column mb-4">
+            <Nav.Link href="/" className="text-white mb-2">
+              <i className="bi bi-house-door me-2" /> Home
+            </Nav.Link>
+            <Nav.Link href="/explore" className="text-white mb-2">
+              <i className="bi bi-compass me-2" /> Explore
+            </Nav.Link>
+            <Nav.Link href="/library" className="text-white">
+              <i className="bi bi-collection me-2" /> Library
+            </Nav.Link>
+          </Nav>
+
+          <hr className="border-secondary" />
+
+          {/* Auth Buttons */}
           {!user ? (
             <>
               <Button
                 variant="outline-light"
-                className="w-100 mb-2"
+                className="w-100 mb-2 rounded-pill"
                 onClick={handleLogin}
               >
-                Login
+                Log In
               </Button>
-              <Button variant="light" className="w-100" onClick={handleSignup}>
+              <Button
+                variant="light"
+                className="w-100 rounded-pill"
+                onClick={handleSignup}
+              >
                 Sign Up
               </Button>
             </>
           ) : (
             <Button
               variant="outline-light"
-              className="w-100"
+              className="w-100 rounded-pill"
               onClick={handleLogout}
             >
-              Logout
+              Log Out
             </Button>
           )}
         </Offcanvas.Body>

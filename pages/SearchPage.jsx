@@ -159,17 +159,15 @@ export default function QueryCard() {
               key={index}
               className="track-item d-flex align-items-center px-3 py-2 rounded track-hover"
             >
+              {/* Index & play icon */}
               <div
-                className="track-index me-3 d-flex align-items-center justify-content-center"
-                style={{ width: "30px" }}
+                className="track-index me-3 d-flex align-items-center justify-content-center flex-shrink-0"
+                style={{ width: "30px", position: "relative" }}
               >
-                {/* Index */}
                 <span className="index-number text-white">{index + 1}</span>
-
-                {/* Play button */}
                 <i
-                  className="bi bi-play-fill index-play icon-dark"
-                  style={{ cursor: "pointer" }}
+                  className="bi bi-play-fill index-play icon-dark position-absolute"
+                  style={{ cursor: "pointer", left: 0 }}
                   onClick={(e) => {
                     e.stopPropagation();
                     playSong();
@@ -177,11 +175,12 @@ export default function QueryCard() {
                 ></i>
               </div>
 
+              {/* Cover */}
               <Image
                 src={result.cover}
                 alt={result.title}
                 rounded
-                className="me-3"
+                className="me-3 flex-shrink-0"
                 style={{
                   width: "56px",
                   height: "56px",
@@ -190,13 +189,25 @@ export default function QueryCard() {
               />
 
               {/* Song info */}
-              <div className="flex-grow-1">
-                <div className="fw-semibold text-white">{result.title}</div>
-                <div className="text-white-50 small">{result.artist}</div>
+              <div className="flex-grow-1 overflow-hidden">
+                <div
+                  className="fw-semibold text-white text-truncate"
+                  style={{ maxWidth: "100%" }}
+                  title={result.title}
+                >
+                  {result.title}
+                </div>
+                <div
+                  className="text-white-50 small text-truncate"
+                  style={{ maxWidth: "100%" }}
+                  title={result.artist}
+                >
+                  {result.artist}
+                </div>
               </div>
 
-              <div className="track-actions d-flex gap-4">
-                {/* Add songs to playlist button */}
+              {/* Actions */}
+              <div className="track-actions d-flex gap-4 align-items-center ms-3 flex-shrink-0">
                 {user && (
                   <i
                     className="bi bi-plus-circle icon-dark add-btn"
@@ -207,8 +218,6 @@ export default function QueryCard() {
                     }}
                   ></i>
                 )}
-
-                {/* Duration */}
                 <div className="fw-semibold text-white">{result.duration}</div>
               </div>
             </div>
@@ -220,17 +229,19 @@ export default function QueryCard() {
 
   return (
     <>
-      <Container
+      <div
         className="bg-card-dark"
         style={{
           height: "100%",
           overflowY: "auto",
         }}
         ref={scrollRef}
-        fluid
       >
-        <TrackList />
-      </Container>
+        <Container>
+          <h3 className="text-white py-3">Search Results</h3>
+          <TrackList />
+        </Container>
+      </div>
 
       {/* Playlist Selection Modal */}
       <Modal show={showModal} onHide={() => setShowModal(false)} centered>
