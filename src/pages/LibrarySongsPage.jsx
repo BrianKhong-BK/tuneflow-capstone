@@ -12,6 +12,8 @@ import axios from "axios";
 import { AuthContext } from "../contexts/AuthContext";
 import { AppStateContext } from "../contexts/AppStateContext";
 import { useParams } from "react-router-dom";
+import { getDownloadURL, ref } from "firebase/storage";
+import { storage } from "../firebase";
 
 export default function LibrarySongsPage() {
   const { token } = useContext(AuthContext);
@@ -25,6 +27,7 @@ export default function LibrarySongsPage() {
   const [playlistDescription, setPlaylistDescription] = useState("");
   const [playlistStatus, setPlaylistStatus] = useState(false);
   const [playlistImage, setPlaylistImage] = useState([]);
+  const [firebaseImageUrl, setFirebaseImageUrl] = useState(null);
   const [songs, setSongs] = useState([]);
 
   useEffect(() => {
@@ -44,6 +47,11 @@ export default function LibrarySongsPage() {
         setPlaylistImage(playlist.images);
         setPlaylistDescription(playlist.description);
         setPlaylistStatus(playlist.is_public);
+
+        // Try to get Firebase image
+        const imageRef = ref(storage, `playlist_covers/${playlistId}.jpg`);
+        const firebaseUrl = await getDownloadURL(imageRef);
+        setFirebaseImageUrl(firebaseUrl);
       } catch (error) {
         console.error("Failed to load playlist", error);
       }
@@ -78,7 +86,7 @@ export default function LibrarySongsPage() {
   const handlePlayAll = () => {
     if (songs.length > 0) {
       setPlayPlaylist(songs);
-      const current = songs[0]; // use songs, not playPlaylist
+      const current = songs[0];
       setCurrentIndex(0);
       setNowPlaying(`${current.title} : ${current.artist}`);
       setSongCover(current.thumbnail);
@@ -143,7 +151,6 @@ export default function LibrarySongsPage() {
               key={song.id}
               className="track-item d-flex align-items-center px-3 py-2 rounded track-hover"
             >
-              {/* Index & play icon */}
               <div
                 className="track-index me-3 d-flex align-items-center justify-content-center flex-shrink-0"
                 style={{ width: "30px", position: "relative" }}
@@ -159,7 +166,6 @@ export default function LibrarySongsPage() {
                 ></i>
               </div>
 
-              {/* Cover */}
               <Image
                 src={song.thumbnail}
                 alt={song.title}
@@ -172,7 +178,6 @@ export default function LibrarySongsPage() {
                 }}
               />
 
-              {/* Song info */}
               <div className="flex-grow-1 overflow-hidden">
                 <div
                   className="fw-semibold text-white text-truncate"
@@ -207,28 +212,28 @@ export default function LibrarySongsPage() {
       </div>
     );
   };
+
   return (
-    <div
-      className="bg-card-dark"
-      style={{
-        height: "100%",
-        overflowY: "auto",
-      }}
-    >
+    <div className="bg-card-dark" style={{ height: "100%", overflowY: "auto" }}>
       <Container>
         <Container fluid className="text-white py-4 px-3">
           <Row className="bg-dark align-items-center p-3 rounded text-center text-md-start">
-            {/* Playlist Image */}
             <Col
               xs={12}
               md="auto"
               className="mb-3 mb-md-0 d-flex justify-content-center justify-content-md-start"
             >
               <div
-                className="playlist-image-container"
+                className="playlist-img-container position-relative"
                 style={{ height: "20vh", width: "20vh" }}
               >
-                {playlistImage.length >= 4 ? (
+                {firebaseImageUrl ? (
+                  <img
+                    src={firebaseImageUrl}
+                    alt="firebase-cover"
+                    className="playlist-img img-fluid object-fit-cover"
+                  />
+                ) : playlistImage.length >= 4 ? (
                   <div className="square-grid-fixed">
                     {playlistImage.slice(0, 4).map((img, index) => (
                       <img key={index} src={img} alt={`img-${index}`} />
@@ -248,7 +253,6 @@ export default function LibrarySongsPage() {
               </div>
             </Col>
 
-            {/* Playlist Info */}
             <Col
               xs={12}
               md="auto"
@@ -259,7 +263,6 @@ export default function LibrarySongsPage() {
               </h5>
               <h1 className="display-5 fw-bold">{playlistName}</h1>
               <p className="text-white-50 mb-1">{playlistDescription}</p>
-
               <Button variant="success" size="md" onClick={handlePlayAll}>
                 <i className="bi bi-play-fill"></i> Play All
               </Button>
@@ -267,11 +270,9 @@ export default function LibrarySongsPage() {
           </Row>
         </Container>
 
-        {/* Song List */}
         <SongList />
       </Container>
 
-      {/* Confirmation Modal */}
       <Modal show={showModal} onHide={() => setShowModal(false)} centered>
         <Modal.Header closeButton>
           <Modal.Title>Remove Song</Modal.Title>

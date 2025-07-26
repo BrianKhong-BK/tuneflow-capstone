@@ -1,5 +1,4 @@
 import { useState, useContext, useEffect, forwardRef } from "react";
-
 import axios from "axios";
 import {
   Container,
@@ -10,9 +9,12 @@ import {
   Col,
   Row,
 } from "react-bootstrap";
+import { getDownloadURL, ref, deleteObject } from "firebase/storage";
+import { storage } from "../firebase";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
 import { AppStateContext } from "../contexts/AppStateContext";
+import { uploadPlaylistCover } from "../services/firebaseUpload";
 
 export default function LibraryPage() {
   const { token } = useContext(AuthContext);
@@ -40,6 +42,15 @@ export default function LibraryPage() {
     }
   }, [token]);
 
+  const fetchCoverFromFirebase = async (playlistId) => {
+    try {
+      const storageRef = ref(storage, `playlist_covers/${playlistId}.jpg`);
+      return await getDownloadURL(storageRef);
+    } catch (err) {
+      return null; // If not found
+    }
+  };
+
   const fetchPlaylists = async () => {
     try {
       const res = await axios.get("http://localhost:3000/api/playlists", {
@@ -47,7 +58,16 @@ export default function LibraryPage() {
           Authorization: `Bearer ${token}`,
         },
       });
-      setPlaylists(res.data);
+
+      // Attach firebaseCover to each playlist
+      const enriched = await Promise.all(
+        res.data.map(async (playlist) => {
+          const firebaseCover = await fetchCoverFromFirebase(playlist.id);
+          return { ...playlist, firebaseCover };
+        })
+      );
+
+      setPlaylists(enriched);
     } catch (err) {
       console.error("Error fetching playlists:", err);
     }
@@ -125,6 +145,10 @@ export default function LibraryPage() {
         }
       );
 
+      await deleteObject(
+        ref(storage, `playlist_covers/${playlistToDelete.id}.jpg`)
+      );
+
       fetchPlaylists();
       setShowDeleteModal(false);
       setPlaylistToDelete(null);
@@ -190,7 +214,13 @@ export default function LibraryPage() {
                 >
                   {/* Square Image */}
                   <div className="playlist-img-container position-relative">
-                    {playlist.images.length >= 4 ? (
+                    {playlist.firebaseCover ? (
+                      <img
+                        src={playlist.firebaseCover}
+                        alt="firebase-cover"
+                        className="playlist-img w-100 h-100 position-absolute top-0 start-0 object-fit-cover"
+                      />
+                    ) : playlist.images.length >= 4 ? (
                       <div className="square-grid-fixed">
                         {playlist.images.slice(0, 4).map((img, index) => (
                           <img key={index} src={img} alt={`img-${index}`} />
@@ -225,6 +255,25 @@ export default function LibraryPage() {
                         <Dropdown.Item
                           onClick={(e) => {
                             e.stopPropagation();
+                            const fileInput = document.createElement("input");
+                            fileInput.type = "file";
+                            fileInput.accept = "image/*";
+                            fileInput.onchange = async (event) => {
+                              const file = event.target.files[0];
+                              if (file) {
+                                try {
+                                  const url = await uploadPlaylistCover(
+                                    file,
+                                    playlist.id
+                                  );
+                                  console.log("Uploaded to:", url);
+                                  fetchPlaylists(); // Refresh to show new cover
+                                } catch (err) {
+                                  console.error("Upload failed:", err);
+                                }
+                              }
+                            };
+                            fileInput.click();
                           }}
                         >
                           <i className="bi bi-card-image me-2"></i>Change Cover
