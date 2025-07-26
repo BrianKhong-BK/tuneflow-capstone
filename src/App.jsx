@@ -1,13 +1,12 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import MainPage from "../pages/MainPage";
-import SignupPage from "../pages/SignupPage";
-import LoginPage from "../pages/LoginPage";
-import SearchPage from "../pages/SearchPage";
-import MainLayout from "../layouts/MainLayout";
-import HomePage from "../pages/HomePage";
-import LibraryPage from "../pages/LibraryPage";
-import LibrarySongsPage from "../pages/LibrarySongsPage";
-import ExplorePage from "../pages/ExplorePage";
+import SignupPage from "./pages/SignupPage";
+import LoginPage from "./pages/LoginPage";
+import SearchPage from "./pages/SearchPage";
+import MainLayout from "./layouts/MainLayout";
+import HomePage from "./pages/HomePage";
+import LibraryPage from "./pages/LibraryPage";
+import LibrarySongsPage from "./pages/LibrarySongsPage";
+import ExplorePage from "./pages/ExplorePage";
 import "./App.css";
 
 export default function App() {

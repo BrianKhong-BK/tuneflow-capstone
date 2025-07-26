@@ -1,4 +1,5 @@
 import { useState, useContext, useEffect, forwardRef } from "react";
+
 import axios from "axios";
 import {
   Container,
@@ -221,6 +222,13 @@ export default function LibraryPage() {
                       />
 
                       <Dropdown.Menu align="end">
+                        <Dropdown.Item
+                          onClick={(e) => {
+                            e.stopPropagation();
+                          }}
+                        >
+                          <i className="bi bi-card-image me-2"></i>Change Cover
+                        </Dropdown.Item>
                         <Dropdown.Item
                           onClick={(e) => {
                             e.stopPropagation();
