@@ -6,6 +6,8 @@ import SearchPage from "../pages/SearchPage";
 import MainLayout from "../layouts/MainLayout";
 import HomePage from "../pages/HomePage";
 import LibraryPage from "../pages/LibraryPage";
+import LibrarySongsPage from "../pages/LibrarySongsPage";
+import ExplorePage from "../pages/ExplorePage";
 import "./App.css";
 
 export default function App() {
@@ -16,6 +18,8 @@ export default function App() {
           <Route index element={<HomePage />} />
           <Route path="/search/:query" element={<SearchPage />} />
           <Route path="/library" element={<LibraryPage />} />
+          <Route path="/library/:id" element={<LibrarySongsPage />} />
+          <Route path="/explore" element={<ExplorePage />} />
         </Route>
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/login" element={<LoginPage />} />

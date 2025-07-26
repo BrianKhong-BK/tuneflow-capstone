@@ -2,11 +2,24 @@ import SearchBar from "../components/SearchBar";
 import MusicNav from "../components/MusicNav";
 import Sidebar from "../components/SideBar";
 import { AppStateContext } from "../contexts/AppStateContext";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 
 export default function MainLayout() {
   const { nowPlaying } = useContext(AppStateContext);
+  const [isSmall, setIsSmall] = useState(window.innerWidth >= 768);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsSmall(window.innerWidth >= 768);
+    };
+
+    // Set initial value
+    handleResize();
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   return (
     <div
@@ -21,28 +34,27 @@ export default function MainLayout() {
         <SearchBar />
       </div>
 
-      <div style={{ flexShrink: 0 }}>
-        <Sidebar />
-      </div>
+      {/* Sidebar only for large screens */}
+      {isSmall && (
+        <div
+          style={{
+            flexShrink: 0,
+            width: "200px",
+            position: "absolute",
+            top: 56 /* adjust height of SearchBar */,
+            bottom: nowPlaying ? 56 : 0,
+          }}
+        >
+          <Sidebar />
+        </div>
+      )}
 
-      {/* Scrollable Content - On Small Screen */}
+      {/* Scrollable Content */}
       <div
-        className="d-md-none"
         style={{
           flexGrow: 1,
           overflowY: "auto",
-        }}
-      >
-        <Outlet />
-      </div>
-
-      {/* Scrollable Content - On Large Screen */}
-      <div
-        className="d-none d-md-block"
-        style={{
-          flexGrow: 1,
-          overflowY: "auto",
-          marginLeft: "200px",
+          marginLeft: isSmall ? "200px" : "0",
         }}
       >
         <Outlet />

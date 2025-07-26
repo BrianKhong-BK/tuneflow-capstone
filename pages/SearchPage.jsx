@@ -121,6 +121,7 @@ export default function QueryCard() {
           artist: selectedTrack.artist,
           youtubeId: selectedTrack.id,
           thumbnail: selectedTrack.cover,
+          duration: selectedTrack.duration,
         },
         {
           headers: {

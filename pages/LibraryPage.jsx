@@ -1,12 +1,22 @@
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext, useEffect, forwardRef } from "react";
 import axios from "axios";
-import { Container, Button, Modal, Form } from "react-bootstrap";
+import {
+  Container,
+  Button,
+  Modal,
+  Form,
+  Dropdown,
+  Col,
+  Row,
+} from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
 import { AppStateContext } from "../contexts/AppStateContext";
 
 export default function LibraryPage() {
   const { token } = useContext(AuthContext);
   const { setSelectedPlaylistId } = useContext(AppStateContext);
+  const navigate = useNavigate();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [playlistName, setPlaylistName] = useState("");
   const [playlistDescription, setPlaylistDescription] = useState("");
@@ -19,6 +29,7 @@ export default function LibraryPage() {
   const [editName, setEditName] = useState("");
   const [editDescription, setEditDescription] = useState("");
   const [editIsPublic, setEditIsPublic] = useState(false);
+  const [openDropdownId, setOpenDropdownId] = useState(null);
 
   useEffect(() => {
     if (token) {
@@ -39,6 +50,10 @@ export default function LibraryPage() {
     } catch (err) {
       console.error("Error fetching playlists:", err);
     }
+  };
+
+  const handlePlaylistClick = (playlistId) => {
+    navigate(`/library/${playlistId}`);
   };
 
   const handleCreate = async () => {
@@ -118,6 +133,20 @@ export default function LibraryPage() {
     }
   };
 
+  const CustomToggle = forwardRef(({ onClick }, ref) => (
+    <div
+      ref={ref}
+      onClick={(e) => {
+        e.stopPropagation(); // prevent card click
+        onClick(e);
+      }}
+      className="burger-icon text-white d-flex justify-content-center align-items-center"
+      style={{ cursor: "pointer" }}
+    >
+      <i className="bi bi-three-dots-vertical fs-5"></i>
+    </div>
+  ));
+
   return (
     <div
       className="bg-card-dark text-white pt-2"
@@ -128,7 +157,7 @@ export default function LibraryPage() {
     >
       <Container>
         <div className="d-flex align-items-center gap-3 py-2">
-          <h5 className="mb-0">Your Playlists</h5>
+          <h3 className="mb-0">Your Playlists</h3>
           <Button
             className="rounded-pill"
             variant="outline-light"
@@ -139,72 +168,99 @@ export default function LibraryPage() {
           </Button>
         </div>
 
-        <div>
+        <Row className="py-2">
           {playlists.length === 0 ? (
             <p className="text-muted">No playlists yet.</p>
           ) : (
             playlists.map((playlist) => (
-              <div
+              <Col
                 key={playlist.id}
-                className=" track-item d-flex align-items-center gap-3 p-2 mb-2 rounded cursor-pointer track-hover"
-                onClick={() => setSelectedPlaylistId(playlist.id)}
-                role="button"
+                xl={2}
+                lg={3}
+                md={4}
+                sm={6}
+                xs={6}
+                className="mb-4"
               >
-                {/* Thumbnail */}
-                {playlist.images.length >= 4 ? (
-                  <div className="square-grid-sm">
-                    <div className="square-grid-inner">
-                      {playlist.images.slice(0, 4).map((img, index) => (
-                        <img key={index} src={img} alt={`img-${index}`} />
-                      ))}
+                <div
+                  className="playlist-box position-relative p-2 text-white overflow-hidden rounded cursor-pointer"
+                  onClick={() => handlePlaylistClick(playlist.id)}
+                  role="button"
+                >
+                  {/* Square Image */}
+                  <div className="playlist-img-container position-relative">
+                    {playlist.images.length >= 4 ? (
+                      <div className="square-grid-fixed">
+                        {playlist.images.slice(0, 4).map((img, index) => (
+                          <img key={index} src={img} alt={`img-${index}`} />
+                        ))}
+                      </div>
+                    ) : playlist.images.length > 0 ? (
+                      <img
+                        src={playlist.images[0]}
+                        alt="playlist-cover"
+                        className="playlist-img w-100 h-100 position-absolute top-0 start-0 object-fit-cover"
+                      />
+                    ) : (
+                      <div className="fallback-icon d-flex justify-content-center align-items-center position-absolute top-0 start-0 w-100 h-100 text-white-50">
+                        <i className="bi bi-music-note-beamed fs-1"></i>
+                      </div>
+                    )}
+
+                    {/* Burger Menu (Dropdown) */}
+                    <Dropdown
+                      className="playlist-dropdown position-absolute top-0 end-0 p-2"
+                      show={openDropdownId === playlist.id}
+                      onToggle={(isOpen) =>
+                        setOpenDropdownId(isOpen ? playlist.id : null)
+                      }
+                    >
+                      <Dropdown.Toggle
+                        as={CustomToggle}
+                        playlistId={playlist.id}
+                      />
+
+                      <Dropdown.Menu align="end">
+                        <Dropdown.Item
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setEditingPlaylist(playlist);
+                            setEditName(playlist.name);
+                            setEditDescription(playlist.description);
+                            setEditIsPublic(playlist.is_public);
+                            setShowEditModal(true);
+                            setOpenDropdownId(null); // close dropdown
+                          }}
+                        >
+                          <i className="bi bi-pencil me-2"></i>Edit
+                        </Dropdown.Item>
+                        <Dropdown.Item
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDelete(playlist);
+                            setOpenDropdownId(null); // close dropdown
+                          }}
+                        >
+                          <i className="bi bi-trash me-2"></i>Delete
+                        </Dropdown.Item>
+                      </Dropdown.Menu>
+                    </Dropdown>
+                  </div>
+
+                  {/* Text Overlay */}
+                  <div className="playlist-info px-2 py-2">
+                    <div className="fw-semibold text-truncate">
+                      {playlist.name}
+                    </div>
+                    <div className="text-white-50 small text-truncate">
+                      Playlist • {playlist.is_public ? "Public" : "Private"}
                     </div>
                   </div>
-                ) : (
-                  <img
-                    src={playlist.images[0]}
-                    alt="playlist-cover"
-                    className="single-image-sm"
-                  />
-                )}
-
-                {/* Playlist Info */}
-                <div className="flex-grow-1">
-                  <div className="fw-semibold">{playlist.name}</div>
-                  <div className="text-white-50 small">
-                    Playlist • {playlist.is_public ? "Public" : "Private"}
-                  </div>
                 </div>
-
-                <div className="track-actions d-flex gap-2">
-                  <Button
-                    variant="outline-secondary"
-                    size="sm"
-                    className="rounded-circle edit-btn"
-                    onClick={(e) => {
-                      e.stopPropagation(); // prevent triggering playlist selection
-                      setEditingPlaylist(playlist);
-                      setEditName(playlist.name);
-                      setEditDescription(playlist.description);
-                      setEditIsPublic(playlist.is_public);
-                      setShowEditModal(true);
-                      console.log(editingPlaylist);
-                    }}
-                  >
-                    <i className="bi bi-pencil-fill"></i>
-                  </Button>
-                  <Button
-                    variant="outline-danger"
-                    size="sm"
-                    className="rounded-circle remove-btn"
-                    onClick={() => handleDelete(playlist)}
-                  >
-                    <i className="bi bi-trash-fill"></i>
-                  </Button>
-                </div>
-              </div>
+              </Col>
             ))
           )}
-        </div>
+        </Row>
       </Container>
 
       {/* Modal */}

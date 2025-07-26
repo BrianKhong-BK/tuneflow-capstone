@@ -172,7 +172,13 @@ export default function PlaylistSongCard({
   };
 
   return (
-    <Col md={9}>
+    <div
+      className="bg-card-dark"
+      style={{
+        height: "100%",
+        overflowY: "auto",
+      }}
+    >
       <Card
         className="bg-card-dark text-white shadow rounded-3"
         style={{ height: "80vh" }}
@@ -213,6 +219,6 @@ export default function PlaylistSongCard({
           </Button>
         </Modal.Footer>
       </Modal>
-    </Col>
+    </div>
   );
 }
