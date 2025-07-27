@@ -12,7 +12,7 @@ import {
   InputGroup,
   Offcanvas,
 } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
 import { AppStateContext } from "../contexts/AppStateContext";
 
@@ -26,6 +26,7 @@ export default function SearchBar() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setShowSearch(false);
     navigate(`/search/${search}`);
     setSelectedPlaylistId("");
   };
@@ -163,13 +164,28 @@ export default function SearchBar() {
         <Offcanvas.Body>
           {/* Navigation */}
           <Nav className="flex-column mb-4">
-            <Nav.Link href="/" className="text-white mb-2">
+            <Nav.Link
+              as={Link}
+              to="/"
+              className="text-white mb-2"
+              onClick={() => setShowAuthMenu(false)}
+            >
               <i className="bi bi-house-door me-2" /> Home
             </Nav.Link>
-            <Nav.Link href="/explore" className="text-white mb-2">
+            <Nav.Link
+              as={Link}
+              to="/explore"
+              className="text-white mb-2"
+              onClick={() => setShowAuthMenu(false)}
+            >
               <i className="bi bi-compass me-2" /> Explore
             </Nav.Link>
-            <Nav.Link href="/library" className="text-white">
+            <Nav.Link
+              as={Link}
+              to="/library"
+              className="text-white"
+              onClick={() => setShowAuthMenu(false)}
+            >
               <i className="bi bi-collection me-2" /> Library
             </Nav.Link>
           </Nav>

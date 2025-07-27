@@ -8,6 +8,7 @@ import {
   Dropdown,
   Col,
   Row,
+  Spinner,
 } from "react-bootstrap";
 import { getDownloadURL, ref, deleteObject } from "firebase/storage";
 import { storage } from "../firebase";
@@ -33,6 +34,7 @@ export default function LibraryPage() {
   const [editDescription, setEditDescription] = useState("");
   const [editIsPublic, setEditIsPublic] = useState(false);
   const [openDropdownId, setOpenDropdownId] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (token) {
@@ -70,6 +72,8 @@ export default function LibraryPage() {
       setPlaylists(enriched);
     } catch (err) {
       console.error("Error fetching playlists:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -194,7 +198,11 @@ export default function LibraryPage() {
         </div>
 
         <Row className="py-2">
-          {playlists.length === 0 ? (
+          {loading ? (
+            <div className="text-center py-5">
+              <Spinner animation="border" variant="light" />
+            </div>
+          ) : playlists.length === 0 ? (
             <p className="text-muted">No playlists yet.</p>
           ) : (
             playlists.map((playlist) => (
