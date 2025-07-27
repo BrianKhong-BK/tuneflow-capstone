@@ -30,7 +30,7 @@ export default function LoginPage() {
         className="p-4 shadow"
         style={{ maxWidth: "400px", width: "100%", borderRadius: "1rem" }}
       >
-        <h2 className="text-center mb-4" style={{ color: "#1DB954" }}>
+        <h2 className="text-center mb-4" style={{ color: "#FF6B00" }}>
           Log in to Tuneflow
         </h2>
 
@@ -63,8 +63,7 @@ export default function LoginPage() {
 
           <Button
             type="submit"
-            variant="success"
-            className="w-100 rounded-pill mt-3"
+            className="register-button w-100 rounded-pill mt-3"
           >
             Log In
           </Button>
@@ -73,7 +72,7 @@ export default function LoginPage() {
         <div className="text-center mt-3">
           <small>
             Don't have an account?{" "}
-            <a href="/signup" className="text-success">
+            <a href="/signup" className="register-text">
               Sign up
             </a>
           </small>

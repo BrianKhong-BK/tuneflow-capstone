@@ -36,8 +36,9 @@ export default function SearchBar() {
 
   const handleLogout = async () => {
     try {
-      await signOut(auth);
       setLoading(true);
+      await signOut(auth);
+      navigate("/");
     } catch (error) {
       console.error("Logout error:", error);
     }
@@ -174,7 +175,7 @@ export default function SearchBar() {
             </Nav.Link>
             <Nav.Link
               as={Link}
-              to="/explore"
+              to={user ? "/explore" : "/login"}
               className="text-white mb-2"
               onClick={() => setShowAuthMenu(false)}
             >
@@ -182,7 +183,7 @@ export default function SearchBar() {
             </Nav.Link>
             <Nav.Link
               as={Link}
-              to="/library"
+              to={user ? "/library" : "/login"}
               className="text-white"
               onClick={() => setShowAuthMenu(false)}
             >

@@ -42,7 +42,7 @@ export default function SignupPage() {
         className="p-4 shadow"
         style={{ maxWidth: "400px", width: "100%", borderRadius: "1rem" }}
       >
-        <h2 className="text-center mb-4" style={{ color: "#1DB954" }}>
+        <h2 className="text-center mb-4" style={{ color: "#FF6B00" }}>
           Sign up for Tuneflow
         </h2>
 
@@ -87,8 +87,7 @@ export default function SignupPage() {
 
           <Button
             type="submit"
-            variant="success"
-            className="w-100 rounded-pill mt-3"
+            className="register-button w-100 rounded-pill mt-3"
           >
             Sign Up
           </Button>
@@ -97,7 +96,7 @@ export default function SignupPage() {
         <div className="text-center mt-3">
           <small>
             Already have an account?{" "}
-            <a href="/login" className="text-success">
+            <a href="/login" className="register-text">
               Log in
             </a>
           </small>

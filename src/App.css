@@ -13,6 +13,24 @@ html {
   padding: 0;
 }
 
+.register-button {
+  background-color: #ff6b00;
+  border-color: #ff6b00;
+}
+
+.register-button:hover {
+  background-color: #e56000;
+  border-color: #e56000;
+}
+
+.register-text {
+  color: #ff6b00;
+}
+
+.register-text:hover {
+  color: #e56000;
+}
+
 /* Applies to all scrollbars */
 ::-webkit-scrollbar {
   width: 8px;

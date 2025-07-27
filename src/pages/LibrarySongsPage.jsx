@@ -16,7 +16,7 @@ import { getDownloadURL, ref } from "firebase/storage";
 import { storage } from "../firebase";
 
 export default function LibrarySongsPage() {
-  const { token } = useContext(AuthContext);
+  const { token, user } = useContext(AuthContext);
   const { setPlayPlaylist, setNowPlaying, setSongCover, setCurrentIndex } =
     useContext(AppStateContext);
   const playlistId = useParams().id;
@@ -27,6 +27,7 @@ export default function LibrarySongsPage() {
   const [playlistDescription, setPlaylistDescription] = useState("");
   const [playlistStatus, setPlaylistStatus] = useState(false);
   const [playlistImage, setPlaylistImage] = useState([]);
+  const [playlistUserId, setPlaylistUserId] = useState("");
   const [firebaseImageUrl, setFirebaseImageUrl] = useState(null);
   const [songs, setSongs] = useState([]);
 
@@ -43,6 +44,7 @@ export default function LibrarySongsPage() {
         );
 
         const playlist = res.data;
+        setPlaylistUserId(playlist.user_id);
         setPlaylistName(playlist.name);
         setPlaylistImage(playlist.images);
         setPlaylistDescription(playlist.description);
@@ -196,14 +198,16 @@ export default function LibrarySongsPage() {
               </div>
 
               <div className="track-actions d-flex gap-4 align-items-center ms-3 flex-shrink-0">
-                <Button
-                  variant="outline-danger"
-                  size="sm"
-                  className="rounded-circle remove-btn"
-                  onClick={() => handleRemove(song)}
-                >
-                  <i className="bi bi-x"></i>
-                </Button>
+                {user.uid === playlistUserId && (
+                  <Button
+                    variant="outline-danger"
+                    size="sm"
+                    className="rounded-circle remove-btn"
+                    onClick={() => handleRemove(song)}
+                  >
+                    <i className="bi bi-x"></i>
+                  </Button>
+                )}
                 <div className="fw-semibold text-white">{song.duration}</div>
               </div>
             </div>

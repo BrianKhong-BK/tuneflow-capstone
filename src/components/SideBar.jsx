@@ -1,13 +1,16 @@
+import { useContext } from "react";
 import { Nav } from "react-bootstrap";
 import { Link, useLocation } from "react-router-dom";
+import { AuthContext } from "../contexts/AuthContext";
 
 export default function Sidebar() {
+  const { user } = useContext(AuthContext);
   const location = useLocation();
 
   const navItems = [
     { name: "Home", path: "/" },
-    { name: "Explore", path: "/explore" },
-    { name: "Library", path: "/library" },
+    { name: "Explore", path: user ? "/explore" : "/login" },
+    { name: "Library", path: user ? "/library" : "/login" },
   ];
 
   return (

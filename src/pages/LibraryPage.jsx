@@ -136,6 +136,20 @@ export default function LibraryPage() {
     setShowDeleteModal(true);
   };
 
+  const firebaseDeleteImage = async (playlistId) => {
+    try {
+      await deleteObject(ref(storage, `playlist_covers/${playlistId}.jpg`));
+    } catch (error) {
+      if (error.code === "storage/object-not-found") {
+        // File doesn't exist, so we can safely ignore this
+        console.log("No file found to delete.");
+      } else {
+        // Other errors should be handled or logged
+        console.error("Error deleting file:", error);
+      }
+    }
+  };
+
   const confirmDelete = async () => {
     if (!playlistToDelete) return;
 
@@ -149,9 +163,7 @@ export default function LibraryPage() {
         }
       );
 
-      await deleteObject(
-        ref(storage, `playlist_covers/${playlistToDelete.id}.jpg`)
-      );
+      firebaseDeleteImage(playlistToDelete.id);
 
       fetchPlaylists();
       setShowDeleteModal(false);
