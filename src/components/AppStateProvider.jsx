@@ -8,7 +8,7 @@ export function AppStateProvider({ children }) {
   const [selectedPlaylistId, setSelectedPlaylistId] = useState("");
   const [playPlaylist, setPlayPlaylist] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const url = "http://localhost:3000";
+  const url = "https://tuneflow-capstone-jn2b.vercel.app";
 
   return (
     <AppStateContext.Provider
