@@ -2,6 +2,7 @@ import { auth } from "../firebase";
 import { signOut } from "firebase/auth";
 import { useState, useContext } from "react";
 import {
+  Nav,
   Navbar,
   Container,
   Button,
@@ -10,22 +11,25 @@ import {
   Col,
   InputGroup,
   Offcanvas,
+  Image,
 } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
+import { AppStateContext } from "../contexts/AppStateContext";
+import logo from "../assets/logo.svg";
 
-export default function SearchBar({ setQuery, setSelectedPlaylistId }) {
+export default function SearchBar() {
   const navigate = useNavigate();
   const { user, setLoading } = useContext(AuthContext);
+  const { setSelectedPlaylistId } = useContext(AppStateContext);
   const [search, setSearch] = useState("");
   const [showSearch, setShowSearch] = useState(false);
   const [showAuthMenu, setShowAuthMenu] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (search.trim()) {
-      setQuery(search.trim());
-    }
+    setShowSearch(false);
+    navigate(`/search/${search}`);
     setSelectedPlaylistId("");
   };
 
@@ -34,8 +38,9 @@ export default function SearchBar({ setQuery, setSelectedPlaylistId }) {
 
   const handleLogout = async () => {
     try {
-      await signOut(auth);
       setLoading(true);
+      await signOut(auth);
+      navigate("/");
     } catch (error) {
       console.error("Logout error:", error);
     }
@@ -48,7 +53,14 @@ export default function SearchBar({ setQuery, setSelectedPlaylistId }) {
           <Row className="w-100 align-items-center">
             {/* Brand */}
             <Col xs={6} md={4} className="text-start">
-              <Navbar.Brand className="fw-bold fs-4">🎵 TuneFlow</Navbar.Brand>
+              <Navbar.Brand className="ps-3">
+                <Image
+                  src={logo}
+                  style={{ height: "40px", cursor: "pointer" }}
+                  fluid
+                  onClick={() => navigate("/")}
+                />
+              </Navbar.Brand>
             </Col>
 
             {/* Search Bar (md and up) */}
@@ -152,33 +164,69 @@ export default function SearchBar({ setQuery, setSelectedPlaylistId }) {
         show={showAuthMenu}
         onHide={() => setShowAuthMenu(false)}
         placement="end"
-        className="bg-card-dark text-white"
+        className="bg-dark text-white"
         backdrop
       >
         <Offcanvas.Header closeVariant="white" closeButton>
-          <Offcanvas.Title>Menu</Offcanvas.Title>
+          <Offcanvas.Title className="fw-bold">Menu</Offcanvas.Title>
         </Offcanvas.Header>
+
         <Offcanvas.Body>
+          {/* Navigation */}
+          <Nav className="flex-column mb-4">
+            <Nav.Link
+              as={Link}
+              to="/"
+              className="text-white mb-2"
+              onClick={() => setShowAuthMenu(false)}
+            >
+              <i className="bi bi-house-door me-2" /> Home
+            </Nav.Link>
+            <Nav.Link
+              as={Link}
+              to={user ? "/explore" : "/login"}
+              className="text-white mb-2"
+              onClick={() => setShowAuthMenu(false)}
+            >
+              <i className="bi bi-compass me-2" /> Explore
+            </Nav.Link>
+            <Nav.Link
+              as={Link}
+              to={user ? "/library" : "/login"}
+              className="text-white"
+              onClick={() => setShowAuthMenu(false)}
+            >
+              <i className="bi bi-collection me-2" /> Library
+            </Nav.Link>
+          </Nav>
+
+          <hr className="border-secondary" />
+
+          {/* Auth Buttons */}
           {!user ? (
             <>
               <Button
                 variant="outline-light"
-                className="w-100 mb-2"
+                className="w-100 mb-2 rounded-pill"
                 onClick={handleLogin}
               >
-                Login
+                Log In
               </Button>
-              <Button variant="light" className="w-100" onClick={handleSignup}>
+              <Button
+                variant="light"
+                className="w-100 rounded-pill"
+                onClick={handleSignup}
+              >
                 Sign Up
               </Button>
             </>
           ) : (
             <Button
               variant="outline-light"
-              className="w-100"
+              className="w-100 rounded-pill"
               onClick={handleLogout}
             >
-              Logout
+              Log Out
             </Button>
           )}
         </Offcanvas.Body>

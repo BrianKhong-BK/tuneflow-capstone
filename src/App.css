@@ -13,6 +13,24 @@ html {
   padding: 0;
 }
 
+.register-button {
+  background-color: #ff6b00;
+  border-color: #ff6b00;
+}
+
+.register-button:hover {
+  background-color: #e56000;
+  border-color: #e56000;
+}
+
+.register-text {
+  color: #ff6b00;
+}
+
+.register-text:hover {
+  color: #e56000;
+}
+
 /* Applies to all scrollbars */
 ::-webkit-scrollbar {
   width: 8px;
@@ -62,22 +80,43 @@ html {
 }
 
 /* Play button on hover */
-.track-hover .index-play {
-  display: none;
-  font-size: 1.25rem;
+.track-hover {
+  position: relative;
 }
 
-.track-hover .index-number {
-  display: block;
-  font-size: 1rem;
+.index-number,
+.index-play {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%; /* Make sure they overlap correctly */
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s ease;
 }
 
+/* Default states */
+.index-number {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.index-play {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* On hover, swap visibility */
 .track-hover:hover .index-number {
-  display: none;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .track-hover:hover .index-play {
-  display: block;
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .index-play:hover {
@@ -192,37 +231,83 @@ html {
   font-size: 0.85rem;
 }
 
-/* Playlist images */
-.square-grid-sm {
-  position: relative;
-  width: 60px;
-  height: 60px;
-  overflow: hidden;
-  flex-shrink: 0;
-  border-radius: 4px;
+/* Playlist */
+.playlist-box {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
-.square-grid-inner {
-  position: absolute;
-  top: 0;
-  left: 0;
+.playlist-img-container {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background-color: #222;
+  border-radius: 0.375rem;
+}
+
+.square-grid-fixed {
+  width: 100%;
+  height: 100%;
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 1fr 1fr;
-  width: 100%;
-  height: 100%;
+  gap: 1px;
+  background-color: #111;
+  border-radius: 0.375rem;
+  overflow: hidden;
 }
 
-.square-grid-inner img,
-.single-image-sm {
+.square-grid-fixed img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
 }
 
-.single-image-sm {
-  width: 60px;
-  height: 60px;
-  flex-shrink: 0;
-  border-radius: 4px;
+.playlist-img,
+.fallback-icon {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 0.375rem;
+}
+
+.playlist-info {
+  transition: background-color 0.2s ease;
+}
+
+.playlist-box:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.text-truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fallback-icon {
+  background-color: black;
+  font-size: 2rem;
+}
+
+/* Home Page */
+
+.playlist-box .play-btn {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.playlist-box:hover .play-btn {
+  opacity: 1;
+}
+
+.play-btn {
+  background-color: #ff6b00;
+  border-color: #ff6b00;
+}
+
+.play-btn:hover {
+  background-color: #e56000;
+  border-color: #e56000;
 }

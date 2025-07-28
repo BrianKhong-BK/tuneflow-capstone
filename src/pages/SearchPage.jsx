@@ -10,15 +10,14 @@ import {
 } from "react-bootstrap";
 import axios from "axios";
 import { AuthContext } from "../contexts/AuthContext";
+import { AppStateContext } from "../contexts/AppStateContext";
+import { useParams } from "react-router-dom";
 
-export default function QueryCard({
-  query,
-  querySize,
-  setNowPlaying,
-  setSongCover,
-  setPlayPlaylist,
-}) {
+export default function QueryCard() {
   const { user, token } = useContext(AuthContext);
+  const { url, setNowPlaying, setSongCover, setPlayPlaylist } =
+    useContext(AppStateContext);
+  const query = useParams().query;
   const [searchResults, setSearchResults] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [playlists, setPlaylists] = useState([]);
@@ -40,7 +39,7 @@ export default function QueryCard({
       try {
         setLoading(true);
         const res = await axios.get(
-          `http://localhost:3000/api/spotify-search?q=${query}&offset=0`
+          `${url}/api/spotify-search?q=${query}&offset=0`
         );
         setSearchResults(res.data.items);
         setHasMore(res.data.hasNextPage);
@@ -82,7 +81,7 @@ export default function QueryCard({
     try {
       setLoading(true);
       const res = await axios.get(
-        `http://localhost:3000/api/spotify-search?q=${query}&offset=${offset}`
+        `${url}/api/spotify-search?q=${query}&offset=${offset}`
       );
       setSearchResults((prev) => [...prev, ...res.data.items]);
       setHasMore(res.data.hasNextPage);
@@ -97,7 +96,7 @@ export default function QueryCard({
   //Add song to playlist call out modal
   async function addSong(track) {
     try {
-      const res = await axios.get("http://localhost:3000/api/playlists", {
+      const res = await axios.get(`${url}/api/playlists`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -116,12 +115,13 @@ export default function QueryCard({
 
     try {
       await axios.post(
-        `http://localhost:3000/api/playlists/${selectedPlaylistId}/songs`,
+        `${url}/api/playlists/${selectedPlaylistId}/songs`,
         {
           title: selectedTrack.title,
           artist: selectedTrack.artist,
           youtubeId: selectedTrack.id,
           thumbnail: selectedTrack.cover,
+          duration: selectedTrack.duration,
         },
         {
           headers: {
@@ -160,17 +160,15 @@ export default function QueryCard({
               key={index}
               className="track-item d-flex align-items-center px-3 py-2 rounded track-hover"
             >
+              {/* Index & play icon */}
               <div
-                className="track-index me-3 d-flex align-items-center justify-content-center"
-                style={{ width: "30px" }}
+                className="track-index me-3 d-flex align-items-center justify-content-center flex-shrink-0"
+                style={{ width: "30px", position: "relative" }}
               >
-                {/* Index */}
                 <span className="index-number text-white">{index + 1}</span>
-
-                {/* Play button */}
                 <i
-                  className="bi bi-play-fill index-play icon-dark"
-                  style={{ cursor: "pointer" }}
+                  className="bi bi-play-fill index-play icon-dark position-absolute"
+                  style={{ cursor: "pointer", left: 0 }}
                   onClick={(e) => {
                     e.stopPropagation();
                     playSong();
@@ -178,11 +176,12 @@ export default function QueryCard({
                 ></i>
               </div>
 
+              {/* Cover */}
               <Image
                 src={result.cover}
                 alt={result.title}
                 rounded
-                className="me-3"
+                className="me-3 flex-shrink-0"
                 style={{
                   width: "56px",
                   height: "56px",
@@ -191,13 +190,25 @@ export default function QueryCard({
               />
 
               {/* Song info */}
-              <div className="flex-grow-1">
-                <div className="fw-semibold text-white">{result.title}</div>
-                <div className="text-white-50 small">{result.artist}</div>
+              <div className="flex-grow-1 overflow-hidden">
+                <div
+                  className="fw-semibold text-white text-truncate"
+                  style={{ maxWidth: "100%" }}
+                  title={result.title}
+                >
+                  {result.title}
+                </div>
+                <div
+                  className="text-white-50 small text-truncate"
+                  style={{ maxWidth: "100%" }}
+                  title={result.artist}
+                >
+                  {result.artist}
+                </div>
               </div>
 
-              <div className="track-actions d-flex gap-4">
-                {/* Add songs to playlist button */}
+              {/* Actions */}
+              <div className="track-actions d-flex gap-4 align-items-center ms-3 flex-shrink-0">
                 {user && (
                   <i
                     className="bi bi-plus-circle icon-dark add-btn"
@@ -208,8 +219,6 @@ export default function QueryCard({
                     }}
                   ></i>
                 )}
-
-                {/* Duration */}
                 <div className="fw-semibold text-white">{result.duration}</div>
               </div>
             </div>
@@ -221,18 +230,19 @@ export default function QueryCard({
 
   return (
     <>
-      <Col md={querySize}>
-        <Card
-          className="bg-card-dark text-white shadow rounded-3"
-          style={{ height: "calc(100vh - 190px)" }}
-        >
-          <Card.Body style={{ overflowY: "auto" }} ref={scrollRef}>
-            <Container fluid>
-              <TrackList />
-            </Container>
-          </Card.Body>
-        </Card>
-      </Col>
+      <div
+        className="bg-card-dark"
+        style={{
+          height: "100%",
+          overflowY: "auto",
+        }}
+        ref={scrollRef}
+      >
+        <Container>
+          <h3 className="text-white py-3">Search Results</h3>
+          <TrackList />
+        </Container>
+      </div>
 
       {/* Playlist Selection Modal */}
       <Modal show={showModal} onHide={() => setShowModal(false)} centered>
