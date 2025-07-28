@@ -290,3 +290,24 @@ html {
   background-color: black;
   font-size: 2rem;
 }
+
+/* Home Page */
+
+.playlist-box .play-btn {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.playlist-box:hover .play-btn {
+  opacity: 1;
+}
+
+.play-btn {
+  background-color: #ff6b00;
+  border-color: #ff6b00;
+}
+
+.play-btn:hover {
+  background-color: #e56000;
+  border-color: #e56000;
+}

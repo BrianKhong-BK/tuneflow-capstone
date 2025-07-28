@@ -8,9 +8,9 @@ export default function Sidebar() {
   const location = useLocation();
 
   const navItems = [
-    { name: "Home", path: "/" },
-    { name: "Explore", path: user ? "/explore" : "/login" },
-    { name: "Library", path: user ? "/library" : "/login" },
+    { name: "Home", path: "/", icon: "house-door" },
+    { name: "Explore", path: user ? "/explore" : "/login", icon: "compass" },
+    { name: "Library", path: user ? "/library" : "/login", icon: "collection" },
   ];
 
   return (
@@ -32,7 +32,7 @@ export default function Sidebar() {
               location.pathname === item.path ? "fw-bold" : ""
             }`}
           >
-            {item.name}
+            <i className={`bi bi-${item.icon} me-2`} /> {item.name}
           </Nav.Link>
         ))}
       </Nav>

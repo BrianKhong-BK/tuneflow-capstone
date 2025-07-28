@@ -3,6 +3,7 @@ import { useEffect, useRef, useState, useContext } from "react";
 import { AppStateContext } from "../contexts/AppStateContext";
 import axios from "axios";
 import { Container, Button, Form, Row, Col, Image } from "react-bootstrap";
+import { AuthContext } from "../contexts/AuthContext";
 
 export default function MusicNav() {
   //Initial state for react-player
@@ -24,6 +25,7 @@ export default function MusicNav() {
     playedSeconds: 0,
   };
 
+  const { token } = useContext(AuthContext);
   const {
     nowPlaying,
     songCover,
@@ -63,6 +65,7 @@ export default function MusicNav() {
           title: song.name,
           artist: song.artist,
         });
+        recentlyPlayed(song);
       } catch (error) {
         console.error("Error playing song", error);
       }
@@ -81,6 +84,27 @@ export default function MusicNav() {
 
     return min + ":" + sec;
   };
+
+  async function recentlyPlayed(song) {
+    try {
+      await axios.post(
+        `${url}/api/recent-played`,
+        {
+          youtubeId: song.videoId,
+          title: song.name,
+          artist: song.artist,
+          thumbnail: songCover,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+    } catch (err) {
+      console.error("Failed to record recently played", err);
+    }
+  }
 
   //Update time duration as song plays
   const handleTimeUpdate = () => {

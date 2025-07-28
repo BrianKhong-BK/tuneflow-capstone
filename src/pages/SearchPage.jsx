@@ -15,7 +15,7 @@ import { useParams } from "react-router-dom";
 
 export default function QueryCard() {
   const { user, token } = useContext(AuthContext);
-  const { setNowPlaying, setSongCover, setPlayPlaylist } =
+  const { url, setNowPlaying, setSongCover, setPlayPlaylist } =
     useContext(AppStateContext);
   const query = useParams().query;
   const [searchResults, setSearchResults] = useState([]);
@@ -39,7 +39,7 @@ export default function QueryCard() {
       try {
         setLoading(true);
         const res = await axios.get(
-          `http://localhost:3000/api/spotify-search?q=${query}&offset=0`
+          `${url}/api/spotify-search?q=${query}&offset=0`
         );
         setSearchResults(res.data.items);
         setHasMore(res.data.hasNextPage);
@@ -81,7 +81,7 @@ export default function QueryCard() {
     try {
       setLoading(true);
       const res = await axios.get(
-        `http://localhost:3000/api/spotify-search?q=${query}&offset=${offset}`
+        `${url}/api/spotify-search?q=${query}&offset=${offset}`
       );
       setSearchResults((prev) => [...prev, ...res.data.items]);
       setHasMore(res.data.hasNextPage);
@@ -96,7 +96,7 @@ export default function QueryCard() {
   //Add song to playlist call out modal
   async function addSong(track) {
     try {
-      const res = await axios.get("http://localhost:3000/api/playlists", {
+      const res = await axios.get(`${url}/api/playlists`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -115,7 +115,7 @@ export default function QueryCard() {
 
     try {
       await axios.post(
-        `http://localhost:3000/api/playlists/${selectedPlaylistId}/songs`,
+        `${url}/api/playlists/${selectedPlaylistId}/songs`,
         {
           title: selectedTrack.title,
           artist: selectedTrack.artist,

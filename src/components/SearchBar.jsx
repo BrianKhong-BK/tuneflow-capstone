@@ -16,7 +16,7 @@ import {
 import { useNavigate, Link } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
 import { AppStateContext } from "../contexts/AppStateContext";
-import logo from "../assets/logo.png";
+import logo from "../assets/logo.svg";
 
 export default function SearchBar() {
   const navigate = useNavigate();
@@ -53,13 +53,13 @@ export default function SearchBar() {
           <Row className="w-100 align-items-center">
             {/* Brand */}
             <Col xs={6} md={4} className="text-start">
-              <Navbar.Brand className="d-flex fw-bold fs-4 align-items-center">
+              <Navbar.Brand className="ps-3">
                 <Image
                   src={logo}
-                  style={{ width: "40px", height: "40px" }}
+                  style={{ height: "40px", cursor: "pointer" }}
                   fluid
+                  onClick={() => navigate("/")}
                 />
-                TuneFlow
               </Navbar.Brand>
             </Col>
 

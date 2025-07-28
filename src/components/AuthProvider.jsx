@@ -9,12 +9,13 @@ export function AuthProvider({ children }) {
   const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // ✅ Listen for token changes (login/logout/auto-refresh by Firebase)
   useEffect(() => {
     const unsubscribe = onIdTokenChanged(auth, async (user) => {
       if (user) {
-        const freshToken = await user.getIdToken();
+        const idToken = await user.getIdToken(); // fresh token
         setUser(user);
-        setToken(freshToken);
+        setToken(idToken);
       } else {
         setUser(null);
         setToken(null);
@@ -22,18 +23,18 @@ export function AuthProvider({ children }) {
       setLoading(false);
     });
 
-    return unsubscribe;
+    return () => unsubscribe();
   }, []);
 
-  // Force refresh the token every 55 minutes
+  // ✅ Force refresh token every 55 minutes (just in case)
   useEffect(() => {
     const interval = setInterval(async () => {
       const currentUser = auth.currentUser;
       if (currentUser) {
-        const refreshedToken = await currentUser.getIdToken(true); // true = force refresh
-        setToken(refreshedToken);
+        const idToken = await currentUser.getIdToken(true); // force refresh
+        setToken(idToken);
       }
-    }, 55 * 60 * 1000); // every 55 minutes
+    }, 55 * 60 * 1000); // 55 minutes
 
     return () => clearInterval(interval);
   }, []);
