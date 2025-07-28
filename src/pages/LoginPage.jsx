@@ -17,6 +17,7 @@ export default function LoginPage() {
       await signInWithEmailAndPassword(auth, email, password);
       navigate("/"); // redirect on success
     } catch (err) {
+      console.error(err);
       setError("Invalid email or password.");
     }
   };

@@ -17,7 +17,7 @@ import { storage } from "../firebase";
 
 export default function LibrarySongsPage() {
   const { token, user } = useContext(AuthContext);
-  const { setPlayPlaylist, setNowPlaying, setSongCover, setCurrentIndex } =
+  const { setPlayPlaylist, setNowPlaying, setSongCover, setCurrentIndex, url } =
     useContext(AppStateContext);
   const playlistId = useParams().id;
   const [loading, setLoading] = useState(true);
@@ -34,14 +34,11 @@ export default function LibrarySongsPage() {
   useEffect(() => {
     async function fetchPlaylists() {
       try {
-        const res = await axios.get(
-          `http://localhost:3000/api/playlists/${playlistId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const res = await axios.get(`${url}/api/playlists/${playlistId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
         const playlist = res.data;
         setPlaylistUserId(playlist.user_id);
@@ -62,7 +59,7 @@ export default function LibrarySongsPage() {
     async function fetchPlaylistSongs() {
       try {
         const res = await axios.get(
-          `http://localhost:3000/api/playlists/${playlistId}/songs`,
+          `${url}/api/playlists/${playlistId}/songs`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -70,7 +67,6 @@ export default function LibrarySongsPage() {
           }
         );
         setSongs(res.data);
-        setCurrentIndex(0);
       } catch (error) {
         console.error("Failed to load playlist songs", error);
       } finally {
@@ -103,7 +99,7 @@ export default function LibrarySongsPage() {
   const confirmRemove = async () => {
     try {
       await axios.delete(
-        `http://localhost:3000/api/playlists/${playlistId}/songs/${selectedSong.id}`,
+        `${url}/api/playlists/${playlistId}/songs/${selectedSong.id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

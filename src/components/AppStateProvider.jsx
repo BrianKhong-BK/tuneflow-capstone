@@ -8,6 +8,7 @@ export function AppStateProvider({ children }) {
   const [selectedPlaylistId, setSelectedPlaylistId] = useState("");
   const [playPlaylist, setPlayPlaylist] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const url = "http://localhost:3000";
 
   return (
     <AppStateContext.Provider
@@ -24,6 +25,7 @@ export function AppStateProvider({ children }) {
         setPlayPlaylist,
         currentIndex,
         setCurrentIndex,
+        url,
       }}
     >
       {children}

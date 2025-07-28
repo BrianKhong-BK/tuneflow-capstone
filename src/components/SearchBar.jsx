@@ -11,10 +11,12 @@ import {
   Col,
   InputGroup,
   Offcanvas,
+  Image,
 } from "react-bootstrap";
 import { useNavigate, Link } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
 import { AppStateContext } from "../contexts/AppStateContext";
+import logo from "../assets/logo.png";
 
 export default function SearchBar() {
   const navigate = useNavigate();
@@ -51,7 +53,14 @@ export default function SearchBar() {
           <Row className="w-100 align-items-center">
             {/* Brand */}
             <Col xs={6} md={4} className="text-start">
-              <Navbar.Brand className="fw-bold fs-4">🎵 TuneFlow</Navbar.Brand>
+              <Navbar.Brand className="d-flex fw-bold fs-4 align-items-center">
+                <Image
+                  src={logo}
+                  style={{ width: "40px", height: "40px" }}
+                  fluid
+                />
+                TuneFlow
+              </Navbar.Brand>
             </Col>
 
             {/* Search Bar (md and up) */}

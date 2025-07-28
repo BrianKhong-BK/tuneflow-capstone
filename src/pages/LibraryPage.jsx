@@ -19,7 +19,7 @@ import { uploadPlaylistCover } from "../services/firebaseUpload";
 
 export default function LibraryPage() {
   const { token } = useContext(AuthContext);
-  const { setSelectedPlaylistId } = useContext(AppStateContext);
+  const { setSelectedPlaylistId, url } = useContext(AppStateContext);
   const navigate = useNavigate();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [playlistName, setPlaylistName] = useState("");
@@ -49,13 +49,14 @@ export default function LibraryPage() {
       const storageRef = ref(storage, `playlist_covers/${playlistId}.jpg`);
       return await getDownloadURL(storageRef);
     } catch (err) {
+      console.error(err);
       return null; // If not found
     }
   };
 
   const fetchPlaylists = async () => {
     try {
-      const res = await axios.get("http://localhost:3000/api/playlists", {
+      const res = await axios.get(`${url}/api/playlists`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -85,7 +86,7 @@ export default function LibraryPage() {
     // Handle playlist creation logic here
     try {
       await axios.post(
-        "http://localhost:3000/api/playlists",
+        `${url}/api/playlists`,
         {
           name: playlistName,
           description: playlistDescription,
@@ -111,7 +112,7 @@ export default function LibraryPage() {
   const handleEdit = async () => {
     try {
       await axios.put(
-        `http://localhost:3000/api/playlists/${editingPlaylist.id}`,
+        `${url}/api/playlists/${editingPlaylist.id}`,
         {
           name: editName,
           description: editDescription,
@@ -154,14 +155,11 @@ export default function LibraryPage() {
     if (!playlistToDelete) return;
 
     try {
-      await axios.delete(
-        `http://localhost:3000/api/playlists/${playlistToDelete.id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      await axios.delete(`${url}/api/playlists/${playlistToDelete.id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       firebaseDeleteImage(playlistToDelete.id);
 
@@ -294,10 +292,23 @@ export default function LibraryPage() {
                               }
                             };
                             fileInput.click();
+                            setOpenDropdownId(null);
                           }}
                         >
                           <i className="bi bi-card-image me-2"></i>Change Cover
                         </Dropdown.Item>
+                        {playlist.firebaseCover && (
+                          <Dropdown.Item
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              firebaseDeleteImage(playlist.id);
+                              fetchPlaylists();
+                              setOpenDropdownId(null);
+                            }}
+                          >
+                            <i className="bi bi-file-x me-2"></i>Delete Cover
+                          </Dropdown.Item>
+                        )}
                         <Dropdown.Item
                           onClick={(e) => {
                             e.stopPropagation();

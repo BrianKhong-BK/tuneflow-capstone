@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect, forwardRef } from "react";
+import { useState, useContext, useEffect } from "react";
 import axios from "axios";
 import {
   Container,
@@ -10,15 +10,15 @@ import {
   Row,
   Spinner,
 } from "react-bootstrap";
-import { getDownloadURL, ref, deleteObject } from "firebase/storage";
+import { getDownloadURL, ref } from "firebase/storage";
 import { storage } from "../firebase";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
 import { AppStateContext } from "../contexts/AppStateContext";
-import { uploadPlaylistCover } from "../services/firebaseUpload";
 
 export default function LibraryPage() {
   const { token } = useContext(AuthContext);
+  const { url } = useContext(AppStateContext);
   const navigate = useNavigate();
   const [playlists, setPlaylists] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -36,20 +36,18 @@ export default function LibraryPage() {
       const storageRef = ref(storage, `playlist_covers/${playlistId}.jpg`);
       return await getDownloadURL(storageRef);
     } catch (err) {
+      console.error(err);
       return null; // If not found
     }
   };
 
   const fetchPlaylists = async () => {
     try {
-      const res = await axios.get(
-        "http://localhost:3000/api/playlists-public",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const res = await axios.get(`${url}/api/playlists-public`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       // Attach firebaseCover to each playlist
       const enriched = await Promise.all(

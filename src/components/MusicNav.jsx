@@ -32,6 +32,7 @@ export default function MusicNav() {
     currentIndex,
     setCurrentIndex,
     setNowPlaying,
+    url,
   } = useContext(AppStateContext);
   const [songId, setSongId] = useState(null);
   const [currentSongInfo, setCurrentSongInfo] = useState({
@@ -50,7 +51,7 @@ export default function MusicNav() {
       try {
         const encodedQuery = encodeURIComponent(nowPlaying);
         const response = await axios.get(
-          `http://localhost:3000/api/youtube-search?q=${encodedQuery}`
+          `${url}/api/youtube-search?q=${encodedQuery}`
         );
 
         const song = response.data.results[0];
