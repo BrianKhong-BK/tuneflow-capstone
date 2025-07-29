@@ -18,7 +18,7 @@ import { AppStateContext } from "../contexts/AppStateContext";
 import { uploadPlaylistCover } from "../services/firebaseUpload";
 
 export default function LibraryPage() {
-  const { token } = useContext(AuthContext);
+  const { token, user } = useContext(AuthContext);
   const { setSelectedPlaylistId, url } = useContext(AppStateContext);
   const navigate = useNavigate();
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -93,6 +93,7 @@ export default function LibraryPage() {
           name: playlistName,
           description: playlistDescription,
           is_public: isPublic,
+          userName: user.displayName,
         },
         {
           headers: {
