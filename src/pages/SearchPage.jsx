@@ -26,7 +26,8 @@ export default function QueryCard() {
   const [selectedPlaylistId, setSelectedPlaylistId] = useState(null);
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [dataLoad, setDataLoad] = useState(true);
   const scrollRef = useRef(null);
 
   //Search on spotify API
@@ -37,6 +38,7 @@ export default function QueryCard() {
 
     async function initialLoad() {
       try {
+        setLoading(true);
         const res = await axios.get(
           `${url}/api/spotify-search?q=${query}&offset=0`
         );
@@ -47,6 +49,7 @@ export default function QueryCard() {
         console.error("Initial load failed", err);
       } finally {
         setLoading(false);
+        setDataLoad(false);
       }
     }
 
@@ -239,7 +242,7 @@ export default function QueryCard() {
       >
         <Container>
           <h3 className="text-white py-3">Search Results</h3>
-          {loading ? (
+          {dataLoad ? (
             <div className="text-center py-5">
               <Spinner animation="border" variant="light" />
             </div>
