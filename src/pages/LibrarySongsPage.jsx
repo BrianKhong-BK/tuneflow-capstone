@@ -30,6 +30,7 @@ export default function LibrarySongsPage() {
   const [playlistUserId, setPlaylistUserId] = useState("");
   const [firebaseImageUrl, setFirebaseImageUrl] = useState(null);
   const [songs, setSongs] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     async function fetchPlaylists() {
@@ -97,6 +98,7 @@ export default function LibrarySongsPage() {
   };
 
   const confirmRemove = async () => {
+    setIsLoading(true);
     try {
       await axios.delete(
         `${url}/api/playlists/${playlistId}/songs/${selectedSong.id}`,
@@ -114,6 +116,8 @@ export default function LibrarySongsPage() {
       setSelectedSong(null);
     } catch (error) {
       console.error("Failed to remove song", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -285,8 +289,8 @@ export default function LibrarySongsPage() {
           <Button variant="secondary" onClick={() => setShowModal(false)}>
             Cancel
           </Button>
-          <Button variant="danger" onClick={confirmRemove}>
-            Remove
+          <Button variant="danger" onClick={confirmRemove} disabled={isLoading}>
+            {isLoading ? "Removing..." : "Remove"}
           </Button>
         </Modal.Footer>
       </Modal>

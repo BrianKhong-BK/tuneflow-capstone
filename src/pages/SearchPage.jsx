@@ -28,6 +28,7 @@ export default function QueryCard() {
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
   const [dataLoad, setDataLoad] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const scrollRef = useRef(null);
 
   //Search on spotify API
@@ -115,6 +116,7 @@ export default function QueryCard() {
   async function handleConfirmAdd() {
     if (!selectedPlaylistId || !selectedTrack) return;
 
+    setIsLoading(true);
     try {
       await axios.post(
         `${url}/api/playlists/${selectedPlaylistId}/songs`,
@@ -136,6 +138,8 @@ export default function QueryCard() {
       setSelectedPlaylistId(null);
     } catch (err) {
       console.error("Failed to add song to playlist", err);
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -282,9 +286,9 @@ export default function QueryCard() {
           <Button
             variant="primary"
             onClick={handleConfirmAdd}
-            disabled={!selectedPlaylistId}
+            disabled={!selectedPlaylistId || isLoading}
           >
-            OK
+            {isLoading ? "Adding..." : "Add"}
           </Button>
         </Modal.Footer>
       </Modal>
