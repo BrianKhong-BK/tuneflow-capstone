@@ -203,7 +203,7 @@ export default function HomePage() {
       ) : (
         <Container>
           <div className="d-flex align-items-center gap-3 py-2">
-            <h3 className="mb-0">Home</h3>
+            <h3 className="mb-0 py-2">Home</h3>
           </div>
 
           {loading ? (
