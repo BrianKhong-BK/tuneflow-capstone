@@ -35,6 +35,7 @@ export default function LibraryPage() {
   const [editIsPublic, setEditIsPublic] = useState(false);
   const [openDropdownId, setOpenDropdownId] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (token) {
@@ -84,6 +85,7 @@ export default function LibraryPage() {
 
   const handleCreate = async () => {
     // Handle playlist creation logic here
+    setIsLoading(true);
     try {
       await axios.post(
         `${url}/api/playlists`,
@@ -106,6 +108,8 @@ export default function LibraryPage() {
       fetchPlaylists();
     } catch (err) {
       console.error(err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -152,6 +156,8 @@ export default function LibraryPage() {
   };
 
   const confirmDelete = async () => {
+    setIsLoading(true);
+
     if (!playlistToDelete) return;
 
     try {
@@ -169,6 +175,8 @@ export default function LibraryPage() {
       setSelectedPlaylistId("");
     } catch (err) {
       console.error(err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -405,9 +413,9 @@ export default function LibraryPage() {
           <Button
             variant="primary"
             onClick={handleCreate}
-            disabled={!playlistName.trim()}
+            disabled={!playlistName.trim() || isLoading}
           >
-            Create
+            {isLoading ? "Creating..." : "Create"}
           </Button>
         </Modal.Footer>
       </Modal>
@@ -432,8 +440,8 @@ export default function LibraryPage() {
           <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
             Cancel
           </Button>
-          <Button variant="danger" onClick={confirmDelete}>
-            Delete
+          <Button variant="danger" onClick={confirmDelete} disabled={isLoading}>
+            {isLoading ? "Deleting..." : "Delete"}
           </Button>
         </Modal.Footer>
       </Modal>
