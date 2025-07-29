@@ -17,7 +17,6 @@ export default function HomePage() {
     if (user) {
       fetchRecentlyAdded();
       fetchRecentlyPlayed();
-      setLoading(false);
     }
   }, [user]);
 
@@ -42,6 +41,7 @@ export default function HomePage() {
         },
       });
       setRecentPlay(res.data);
+      setLoading(false);
     } catch (err) {
       console.error(err);
     }

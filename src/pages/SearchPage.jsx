@@ -7,6 +7,7 @@ import {
   Button,
   Modal,
   Form,
+  Spinner,
 } from "react-bootstrap";
 import axios from "axios";
 import { AuthContext } from "../contexts/AuthContext";
@@ -25,7 +26,7 @@ export default function QueryCard() {
   const [selectedPlaylistId, setSelectedPlaylistId] = useState(null);
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const scrollRef = useRef(null);
 
   //Search on spotify API
@@ -33,7 +34,6 @@ export default function QueryCard() {
     setSearchResults([]);
     setOffset(0);
     setHasMore(true);
-    setLoading(false);
 
     async function initialLoad() {
       try {
@@ -240,7 +240,13 @@ export default function QueryCard() {
       >
         <Container>
           <h3 className="text-white py-3">Search Results</h3>
-          <TrackList />
+          {loading ? (
+            <div className="text-center py-5">
+              <Spinner animation="border" variant="light" />
+            </div>
+          ) : (
+            <TrackList />
+          )}
         </Container>
       </div>
 

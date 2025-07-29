@@ -62,7 +62,15 @@ export default function MainLayout() {
 
       {/* Fixed Bottom Music Player */}
       {nowPlaying && (
-        <div style={{ flexShrink: 0 }}>
+        <div
+          style={{
+            position: "fixed",
+            bottom: 0,
+            left: 0,
+            right: 0,
+            zIndex: 1050, // Bootstrap modals use 1050, use 1100 to be safe
+          }}
+        >
           <MusicNav />
         </div>
       )}

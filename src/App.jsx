@@ -7,6 +7,7 @@ import HomePage from "./pages/HomePage";
 import LibraryPage from "./pages/LibraryPage";
 import LibrarySongsPage from "./pages/LibrarySongsPage";
 import ExplorePage from "./pages/ExplorePage";
+import ErrorPage400 from "./pages/ErrorPage400";
 import "./App.css";
 
 export default function App() {
@@ -22,6 +23,7 @@ export default function App() {
         </Route>
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="*" element={<ErrorPage400 />} />
       </Routes>
     </BrowserRouter>
   );
