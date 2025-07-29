@@ -144,6 +144,12 @@ export default function MusicNav() {
 
   //Change volume
   const handleVolumeChange = (event) => {
+    if (muted && volume > 0) {
+      setState((prev) => ({
+        ...prev,
+        muted: false,
+      }));
+    }
     const inputTarget = event.target;
     setState((prev) => ({
       ...prev,
