@@ -37,7 +37,6 @@ export default function QueryCard() {
 
     async function initialLoad() {
       try {
-        setLoading(true);
         const res = await axios.get(
           `${url}/api/spotify-search?q=${query}&offset=0`
         );

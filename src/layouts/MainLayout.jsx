@@ -55,7 +55,7 @@ export default function MainLayout() {
           flexGrow: 1,
           overflowY: "auto",
           marginLeft: isSmall ? "200px" : "0",
-          marginBottom: nowPlaying ? "56px" : "0",
+          marginBottom: nowPlaying ? "74px" : "0",
         }}
       >
         <Outlet />
