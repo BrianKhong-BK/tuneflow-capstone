@@ -13,7 +13,7 @@ export default function MusicNav() {
     playing: false,
     controls: false,
     light: false,
-    volume: 0.7,
+    volume: 1,
     muted: false,
     played: 0,
     loaded: 0,
@@ -322,7 +322,7 @@ export default function MusicNav() {
             >
               <ReactPlayer
                 ref={playerRef}
-                src={`https://www.youtube.com/watch?v=${songId}`}
+                src={`https://music.youtube.com/watch?v=${songId}`}
                 playing={playing}
                 volume={volume}
                 muted={muted}
