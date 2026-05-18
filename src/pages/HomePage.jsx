@@ -183,6 +183,16 @@ export default function HomePage() {
           <p className="lead mb-5">
             Stream your favorite music anytime, anywhere.
           </p>
+          <div className="lead mb-5">
+            <p>
+              (Due to API changes this site is no longer working. Just click on
+              login to continue or visit the new site:)
+            </p>
+            <a href="https://tuneflow-frontend.vercel.app">
+              https://tuneflow-frontend.vercel.app
+            </a>
+          </div>
+
           <div className="d-flex gap-3">
             <Button
               variant="outline-light"

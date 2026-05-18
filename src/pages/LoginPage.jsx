@@ -5,8 +5,8 @@ import { auth } from "../firebase"; // Adjust this path as needed
 import { useNavigate } from "react-router-dom";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("bk@gmail.com");
+  const [password, setPassword] = useState("123456");
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
